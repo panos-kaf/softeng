@@ -1,7 +1,7 @@
 CREATE DATABASE tl_database;
 USE tl_database;
 
--- Table: Operator
+/* Table: Operator */
 CREATE TABLE Operator (
     ID INT PRIMARY KEY,
     Name VARCHAR(255) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE Operator (
     OP_ID VARCHAR(3)
 );
 
--- Table: Toll Station
+/* Table: Toll Station */
 CREATE TABLE TollStation (
     ID INT PRIMARY KEY,
     Road VARCHAR(255),
@@ -22,7 +22,7 @@ CREATE TABLE TollStation (
     CONSTRAINT FK_TollStation_Operator FOREIGN KEY (OperatorID) REFERENCES Operator(ID)
 );
 
--- Table: Tag
+/* Table: Tag */
 CREATE TABLE Tag (
     ID INT PRIMARY KEY,
     TagRef VARCHAR(20) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE Tag (
     CONSTRAINT FK_Tag_Operator FOREIGN KEY (OperatorID) REFERENCES Operator(ID)
 );
 
--- Table: Transaction
+/* Table: Transaction */
 CREATE TABLE Transaction (
     ID INT PRIMARY KEY,
     Toll_ID INT,
@@ -45,7 +45,7 @@ CREATE TABLE Transaction (
     CONSTRAINT FK_Transaction_TollStation FOREIGN KEY (TollStationID) REFERENCES TollStation(ID)
 );
 
--- Table: Payment
+/* Table: Payment */
 CREATE TABLE Payment (
     ID INT PRIMARY KEY,
     FromOperator INT,
@@ -58,7 +58,7 @@ CREATE TABLE Payment (
     CONSTRAINT FK_Payment_Settlement FOREIGN KEY (SettlementID) REFERENCES Settlement(ID)
 );
 
--- Table: Settlement
+/* Table: Settlement */
 CREATE TABLE Settlement (
     OP_ID INT,
     Date TIMESTAMP NOT NULL,
