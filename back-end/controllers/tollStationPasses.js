@@ -1,5 +1,5 @@
 const { parse_date, formatDate } = require('../utils/date_conversion')
-const db = require('../utils/database');
+const db = require('../utils/db');
 
 exports.getAll = async (req, res, next) => {
     let limit = undefined;
@@ -17,7 +17,6 @@ exports.getPassesInDateRange = async (req, res, next) => {
     if (isNaN(fromDate) || isNaN(toDate) || fromDate > toDate)
         return res.status(400).json({ message: 'Invalid date' });
     
-    console.log(process.env.DB);
     const formattedDateFrom = fromDate.toISOString().slice(0, 19).replace('T', ' ');
     const formattedDateTo = toDate.toISOString().slice(0, 19).replace('T', ' ');
     try {
@@ -33,7 +32,5 @@ exports.getPassesInDateRange = async (req, res, next) => {
         console.error("Error fetching toll station passes:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
-    res.status(404).json({
-        message: `Fetching passes for ${tollStationID} from ${formatDate(fromDate)} to ${formatDate(toDate)}`
-    });
+    console.log(`Fetching passes on ${process.env.DB} for ${tollStationID} from ${formatDate(fromDate)} to ${formatDate(toDate)}`);
 };
