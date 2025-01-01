@@ -1,10 +1,15 @@
 const authenticate = (req, res, next) => {
-    const secretKey = req.headers['secret-key'];
+  const token = req.headers['x-observatory-auth']; // Custom header
 
-    // Check if the API key is valid (this is a simple example)
-    if (secretKey !== process.env.MY_SECRET_KEY) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    next();
-}
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+  try {
+      const decoded = jwt.verify(token, 'secret-key'); // Use your secret key
+      req.user = decoded; // Attach decoded token payload to the request
+      next();
+  } catch (err) {
+      res.status(403).json({ message: 'Invalid or expired token' });
+  }
+};
+
 module.exports = authenticate;
