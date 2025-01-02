@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const tollStationPassesRouter = require('./api/routes/tollStationPasses.js');
-const passAnalysisRouter = require('./api/routes/passAnalysis');
-const passesCostRouter = require('./api/routes/passesCost');
-const chargesByRouter = require('./api/routes/chargesBy');
+const tollStationPassesRouter = require('./tollStationPasses');
+const passAnalysisRouter = require('./passAnalysis');
+const passesCostRouter = require('./passesCost');
+const chargesByRouter = require('./chargesBy');
 
-router.use('/healthcheck', healthcheckRouter);
-router.use('/resetStations', resetStationsRouter);
-router.use('/resetPasses', resetPassesRouter);
-router.use('/addPasses', addPassesRouter);
+router.use('/tollStationPasses', tollStationPassesRouter);
+router.use('/passAnalysis', passAnalysisRouter);
+router.use('/passesCost', passesCostRouter);
+router.use('/chargesBy', chargesByRouter);
 
 module.exports = router;

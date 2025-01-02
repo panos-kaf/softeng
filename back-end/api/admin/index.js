@@ -7,8 +7,8 @@ const resetPassesRouter = require('./resetpasses');
 const addPassesRouter = require('./addpasses');
 
 router.use('/healthcheck', healthcheckRouter);
-router.use('/resetStations', resetStationsRouter);
-router.use('/resetPasses', resetPassesRouter);
-router.use('/addPasses', addPassesRouter);
+router.use('/resetstations', resetStationsRouter);
+router.use('/resetpasses', resetPassesRouter);
+router.use('/addpasses', addPassesRouter);
 
 module.exports = router;
