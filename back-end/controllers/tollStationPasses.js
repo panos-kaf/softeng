@@ -2,6 +2,7 @@ const { parse_date, formatDate } = require('../utils/date_conversion')
 const db = require('../utils/db');
 
 exports.getAll = async (req, res, next) => {
+    console.log('hi');
     let limit = undefined;
     if (req.query.limit) {
         limit = Number(req.query.limit);
@@ -10,6 +11,7 @@ exports.getAll = async (req, res, next) => {
 }
 
 exports.getPassesInDateRange = async (req, res, next) => {
+    console.log('hi');
     const { tollStationID, date_from, date_to } = req.params;
     const fromDate = parse_date(date_from);
     const toDate = parse_date(date_to);

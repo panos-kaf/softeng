@@ -1,11 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
 
 const authenticate = require('./middleware/auth');
 const adminAuth = require('./middleware/adminAuth');
 
-const loginRouter = require('./api/routes/log');
+const loginRouter = require('./api/log');
 const mainRouter = require('./api/routes/index');
 const adminRouter = require('./api/admin/index');
 
@@ -16,8 +15,8 @@ app.use(express.urlencoded({extended: true}));
 
 // Mount routers
 app.use('/', loginRouter);
+app.use('/api', authenticate, mainRouter);
 app.use('/admin', authenticate, adminAuth, adminRouter);
-app.use('/routes', authenticate, mainRouter);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
