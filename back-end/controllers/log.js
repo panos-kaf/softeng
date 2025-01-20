@@ -2,6 +2,10 @@ const db = require('../utils/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+exports.getAll = async (req, res) => {
+    res.status(200).json({ message: 'Hi' });
+};
+
 exports.in = async (req, res) => {
     const { username, password } = req.body;
     
