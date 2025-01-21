@@ -11,7 +11,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE operators (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255),
     adm INT,
@@ -35,7 +35,7 @@ CREATE TABLE toll_stations (
 );
 
 CREATE TABLE tags (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     tag_ref VARCHAR(20) NOT NULL,
     tag_home VARCHAR(3),
     operator_id INT,
@@ -43,7 +43,7 @@ CREATE TABLE tags (
 );
 
 CREATE TABLE transactions (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     toll_id INT,
     tag_ref VARCHAR(20),
     timestamp TIMESTAMP NOT NULL,
@@ -56,9 +56,9 @@ CREATE TABLE transactions (
 );
 
 CREATE TABLE settlements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     op_id INT,
     date TIMESTAMP NOT NULL,
-    id INT PRIMARY KEY,
     from_operator INT,
     to_operator INT,
     CONSTRAINT fk_settlements_from_operator FOREIGN KEY (from_operator) REFERENCES operators(id),
@@ -66,7 +66,7 @@ CREATE TABLE settlements (
 );
 
 CREATE TABLE payments (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     from_operator INT,
     to_operator INT,
     amount NUMERIC(10, 2),
