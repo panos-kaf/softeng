@@ -14,8 +14,7 @@ CREATE TABLE operators (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255),
-    adm INT,
-    op_id VARCHAR(3)
+    op_id VARCHAR(4) UNIQUE 
 );
 
 CREATE TABLE toll_stations (
@@ -23,8 +22,8 @@ CREATE TABLE toll_stations (
     toll_id VARCHAR(10) UNIQUE, -- Add unique constraint to TollID
     road VARCHAR(255),
     locality VARCHAR(255),
-    lat NUMERIC,
-    lon NUMERIC,
+    lat DECIMAL(7, 5),
+    lon DECIMAL(7, 5),
     price1 DECIMAL(10, 2),
     price2 DECIMAL(10, 2),
     price3 DECIMAL(10, 2),
@@ -76,5 +75,3 @@ CREATE TABLE payments (
     CONSTRAINT fk_payments_to_operator FOREIGN KEY (to_operator) REFERENCES operators(id),
     CONSTRAINT fk_payments_settlement FOREIGN KEY (settlement_id) REFERENCES settlements(id)
 );
-
-

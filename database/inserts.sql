@@ -1,16 +1,14 @@
 /* Εισαγωγή δεδομένων στον πίνακα operators */
-INSERT INTO operators (id, name, email, adm, op_id)
+INSERT INTO operators (name, email, op_id)
 VALUES
-    (1, 'Operator A', 'operatorA@example.com', 1, 'OP1'),
-    (2, 'Operator B', 'operatorB@example.com', 0, 'OP2'),
-    (3, 'Operator C', 'operatorC@example.com', 1, 'OP3');
-
-/* Εισαγωγή δεδομένων στον πίνακα toll_stations */
-INSERT INTO toll_stations (id, road, locality, lat, lon, station_id, operator_id)
-VALUES
-    (101, 'Main Road', 'City A', 40.7128, -74.0060, 'TS101', 1),
-    (102, 'Highway 1', 'City B', 34.0522, -118.2437, 'TS102', 2),
-    (103, 'Route 66', 'City C', 41.8781, -87.6298, 'TS103', 1);
+    ('aegeanmotorway', 'customercare@aegeanmotorway.gr', 'AM'),
+    ('egnatia','eoae@egnatia.gr','EG'),
+    ('gefyra','info@gefyra.gr','GE'),
+    ('kentrikiodos','customercare@kentrikiodos.gr','KO'),
+    ('moreas','info@moreas.com','MO'),
+    ('naodos','customercare@attikesdiadromes.gr','NAO'),
+    ('neaodos','info@neaodos.gr','NO'),
+    ('olympiaodos','customercare@olympiaoperation.gr','OO');
 
 /* Εισαγωγή δεδομένων στον πίνακα tags */
 INSERT INTO tags (id, tag_ref, tag_home, operator_id)
