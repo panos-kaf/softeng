@@ -16,10 +16,7 @@ exports.resetStations = async (req, res, next) => {
         const connection = await db.getConnection(); // Use db utility to get the connection
 
         try {
-          // Start a transaction
           await connection.beginTransaction();
-
-          // Clear existing toll stations
           await connection.query("DELETE FROM toll_stations");
 
           // Insert new data from the CSV
@@ -31,7 +28,6 @@ exports.resetStations = async (req, res, next) => {
             );
 
             const operatorId = operator.length > 0 ? operator[0].id : null;
-
             // Insert the data into the toll_stations table
             await connection.query(
               `
@@ -57,14 +53,15 @@ exports.resetStations = async (req, res, next) => {
 
           // Commit the transaction
           await connection.commit();
-          res.status(200).send("Toll stations reset successfully!");
+          console.log("Toll stations have been reset.");
+          res.status(200).json({ status: "OK"});
         } catch (error) {
           // Rollback on error
           await connection.rollback();
           console.error(error);
-          res.status(500).send("An error occurred while resetting toll stations.");
+          res.status(500).json({ "status": "failed", "info": error.message});
         } finally {
-          connection.release(); // Release the connection
+          connection.release();
         }
       });
   } catch (error) {
