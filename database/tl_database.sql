@@ -1,6 +1,3 @@
-CREATE DATABASE tl_database;
-USE tl_database;
-
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -35,18 +32,15 @@ CREATE TABLE toll_stations (
 
 CREATE TABLE tags (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    tag_ref VARCHAR(20) NOT NULL,
-    tag_home VARCHAR(3),
+    tag_ref VARCHAR(20) NOT NULL UNIQUE,
     operator_id INT,
     CONSTRAINT fk_tags_operators FOREIGN KEY (operator_id) REFERENCES operators(id)
 );
 
 CREATE TABLE transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    toll_id INT,
-    tag_ref VARCHAR(20),
     timestamp TIMESTAMP NOT NULL,
-    charge NUMERIC(10, 2),
+    charge NUMERIC(10, 2) NOT NULL,
     settlement_id INT,
     tag_id INT,
     toll_station_id INT,
