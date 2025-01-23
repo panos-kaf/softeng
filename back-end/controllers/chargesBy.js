@@ -1,4 +1,4 @@
-const {parse_date, formatDate} = require('../utils/date_conversion');
+const {calculateDatePeriod} = require('../utils/date_conversion');
 const db = require('../utils/db');
 
 exports.getAll = async(req, res, next) => {
@@ -9,6 +9,53 @@ exports.getAll = async(req, res, next) => {
     }
 }
 
-exports.getChargesBy = async(req, res, next) => {
+exports.getChargesBy = async (req, res) => {
+    const { tollOpID, date_from, date_to } = req.params;
+    try{
+        const {fromDate, toDate} = calculateDatePeriod(date_from, date_to);
+        try {
+            // SQL Query to get charges by visiting operators
+            const query = `
+                SELECT 
+                    tags.operator_id AS visitingOpID,
+                    COUNT(*) AS nPasses,
+                    SUM(transactions.charge) AS passesCost
+                FROM 
+                    transactions
+                JOIN 
+                    toll_stations ON transactions.toll_station_id = toll_stations.id
+                JOIN 
+                    tags ON transactions.tag_id = tags.id
+                WHERE 
+                    toll_stations.operator_id = ? 
+                    AND transactions.timestamp BETWEEN ? AND ?
+                GROUP BY 
+                    tags.operator_id;
+            `;
     
-}
+            const [results] = await db.execute(query, [tollOpID, fromDate, toDate]);
+            
+            if (!results.length) {
+                return res.status(204).json(); // No content
+            }
+    
+            res.status(200).json({
+                tollOpID,
+                requestTimestamp: new Date().toISOString(),
+                periodFrom: fromDate,
+                periodTo: toDate,
+                visitingOperators: results.map((row) => ({
+                    visitingOpID: row.visitingOpID,
+                    nPasses: row.nPasses,
+                    passesCost: row.passesCost || 0.0,
+                })),
+            });
+            
+        } catch (error) {
+            console.error('Error fetching charges by operators:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    } catch (error) {
+        res.status(400).json({message:"Invalid date range"});
+    }
+};
