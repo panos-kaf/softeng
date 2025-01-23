@@ -2,7 +2,6 @@ const { parse_date, formatDate } = require('../utils/date_conversion')
 const db = require('../utils/db');
 
 exports.getAll = async (req, res, next) => {
-    console.log('hi');
     let limit = undefined;
     if (req.query.limit) {
         limit = Number(req.query.limit);
@@ -11,7 +10,6 @@ exports.getAll = async (req, res, next) => {
 }
 
 exports.getPassesInDateRange = async (req, res, next) => {
-    console.log('hi');
     const { tollStationID, date_from, date_to } = req.params;
     const fromDate = parse_date(date_from);
     const toDate = parse_date(date_to);
@@ -24,8 +22,12 @@ exports.getPassesInDateRange = async (req, res, next) => {
     try {
         const query = `
             SELECT * 
-            FROM Transaction 
-            WHERE Toll_ID = ? AND TimeStamp BETWEEN ? AND ?;
+            FROM transactions 
+            WHERE toll_station_id = (
+            SELECT id 
+            FROM toll_stations
+            WHERE toll_id = ?
+            ) AND TimeStamp BETWEEN ? AND ?;
         `;
         const [results] = await db.execute(query, [tollStationID, formattedDateFrom, formattedDateTo]);
 
