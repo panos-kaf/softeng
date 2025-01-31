@@ -17,7 +17,27 @@ exports.resetStations = async (req, res, next) => {
 
         try {
           await connection.beginTransaction();
+          await connection.query("DELETE FROM transactions");
+          await connection.query("DELETE FROM tags");
           await connection.query("DELETE FROM toll_stations");
+          await connection.query("DELETE FROM operators");
+
+          const uniqueOps = results.reduce((acc, row) => {
+              // Check if this operator already exists in the accumulator
+              if (!acc.some(op => op.OpID === row['OpID'] && op.Email === row.Email && op.Operator === row.Operator)) {
+                  acc.push(row); // If not, add it to the accumulator
+              }
+              return acc;
+          }, []); 
+          console.log(uniqueOps);
+          // Prepare a list of values to insert
+          const operators = uniqueOps.map(row => [row.OpID, row.Email, row.Operator]);
+          console.log(operators);            
+
+          const opInsert = `INSERT INTO operators (op_id, email, name) VALUES ?`;
+          await connection.query(opInsert, [operators]);
+          //await connection.commit();
+
 
           // Insert new data from the CSV
           for (const row of results) {
