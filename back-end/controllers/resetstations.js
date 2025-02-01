@@ -3,14 +3,14 @@ const fs = require("fs");
 const csv = require("csv-parser");
 
 exports.resetStations = async (req, res, next) => {
-  const filePath = "data/stations.csv"; // Path to your predefined CSV file
+  const filePath = "data/stations.csv";
 
   try {
     const results = [];
 
     // Parse the CSV file
     fs.createReadStream(filePath)
-      .pipe(csv())
+      .pipe(csv({ mapHeaders: ({ header }) => header.replace(/^\uFEFF/, "").trim() }))
       .on("data", (data) => results.push(data))
       .on("end", async () => {
         const connection = await db.getConnection(); // Use db utility to get the connection
@@ -23,21 +23,14 @@ exports.resetStations = async (req, res, next) => {
           await connection.query("DELETE FROM operators");
 
           const uniqueOps = results.reduce((acc, row) => {
-              // Check if this operator already exists in the accumulator
-              if (!acc.some(op => op.OpID === row['OpID'] && op.Email === row.Email && op.Operator === row.Operator)) {
-                  acc.push(row); // If not, add it to the accumulator
-              }
+              if (!acc.some(op => op.OpID === row.OpID))
+                  acc.push(row);
               return acc;
           }, []); 
-          console.log(uniqueOps);
-          // Prepare a list of values to insert
-          const operators = uniqueOps.map(row => [row.OpID, row.Email, row.Operator]);
-          console.log(operators);            
 
+          const operators = uniqueOps.map(row => [row.OpID, row.Email, row.Operator]);
           const opInsert = `INSERT INTO operators (op_id, email, name) VALUES ?`;
           await connection.query(opInsert, [operators]);
-          //await connection.commit();
-
 
           // Insert new data from the CSV
           for (const row of results) {
