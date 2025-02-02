@@ -15,8 +15,7 @@ exports.getHealthcheck = async(req, res, next) => {
         });
     } catch (error) {
         console.error("Error fetching healthcheck:", error);
-        res.status(401).json({status: "failed",
-            "db_connection": connection_string,
+        res.status(401).json({status: "failed", "db_connection": connection_string,
         });
     }
 }

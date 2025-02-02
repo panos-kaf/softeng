@@ -3,27 +3,29 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const role = localStorage.getItem("role"); // Παίρνουμε το role από το Local Storage
 
   const handleLogout = () => {
     localStorage.removeItem("token"); // Διαγραφή του token
+    localStorage.removeItem("role");  // Διαγραφή του role
     navigate("/login"); // Ανακατεύθυνση στη σελίδα login
   };
 
   return (
     <div style={styles.sidebar}>
-      <h2 style={styles.title}>Admin Dashboard</h2>
+      <h2 style={styles.title} onClick={() => navigate(`/${role}/home`)}>Admin Dashboard</h2>
       <ul style={styles.list}>
         <li>
-          <NavLink to="/home" style={getLinkStyle} end>🏠 Αρχική</NavLink>
+          <NavLink to={`/${role}/home`} style={getLinkStyle} end>🏠 Αρχική</NavLink>
         </li>
         <li>
-          <NavLink to="/passes" style={getLinkStyle}>🚗 Διελεύσεις</NavLink>
+          <NavLink to={`/${role}/passes`} style={getLinkStyle}>🚗 Διελεύσεις</NavLink>
         </li>
         <li>
-          <NavLink to="/payments" style={getLinkStyle}>💳 Πληρωμές</NavLink>
+          <NavLink to={`/${role}/payments`} style={getLinkStyle}>💳 Πληρωμές</NavLink>
         </li>
         <li>
-          <NavLink to="/settings" style={getLinkStyle}>⚙️ Ρυθμίσεις</NavLink>
+          <NavLink to={`/${role}/settings`} style={getLinkStyle}>⚙️ Ρυθμίσεις</NavLink>
         </li>
       </ul>
 
@@ -38,7 +40,7 @@ const Sidebar = () => {
 const styles = {
   sidebar: {
     width: "250px",
-    height: "100vh",
+    height: "95vh",
     backgroundColor: "#282c34",
     color: "white",
     padding: "20px",
@@ -49,6 +51,7 @@ const styles = {
   title: {
     fontSize: "20px",
     marginBottom: "20px",
+    cursor: "pointer",
   },
   list: {
     listStyle: "none",
@@ -70,7 +73,7 @@ const styles = {
   logoutButton: {
     marginTop: "auto",
     padding: "10px",
-    backgroundColor: "",
+    backgroundColor: "#3a506b",
     color: "white",
     border: "none",
     cursor: "pointer",
@@ -80,7 +83,6 @@ const styles = {
   },
 };
 
-// Δυναμικό styling για το ενεργό link
 const getLinkStyle = ({ isActive }) => ({
   ...styles.link,
   ...(isActive ? styles.activeLink : {}),

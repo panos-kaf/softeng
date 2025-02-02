@@ -5,7 +5,7 @@ const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     database: 'tl_database',
-    password: 'root',
+    password: 'admin',
     port: '3306'
 });
 
@@ -27,4 +27,4 @@ async function createUser(username, password, role = 'user') {
 }
 
 // Call the function to create the user
-createUser('kfc', 'kfc18', 'admin');
+createUser('admin', 'admin', 'admin');

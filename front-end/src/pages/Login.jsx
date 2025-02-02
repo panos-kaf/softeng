@@ -10,18 +10,39 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
     try {
+      console.log("🔵 Αποστολή Login Request:", { username, password });
+
       const response = await axios.post("http://localhost:9115/api/login", {
         username,
         password,
       });
 
-      // Αποθήκευση JWT token στο Local Storage
-      localStorage.setItem("token", response.data.token);
-      
-      // Μετάβαση στο Home
-      navigate("/home");
+      console.log("✅ API Response:", response.data);
+
+      // Πάρε το token και το role από το API response
+      const { token, role } = response.data;
+
+      if (!token || !role) {
+        console.error("❌ Το API δεν επέστρεψε σωστά το token ή το role!");
+        setError("Σφάλμα σύνδεσης. Δοκίμασε ξανά.");
+        return;
+      }
+
+      // Αποθήκευση στο Local Storage
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      console.log("✅ Token αποθηκεύτηκε:", token);
+      console.log("✅ Role αποθηκεύτηκε:", role);
+
+      // Ανακατεύθυνση στο σωστό Dashboard
+      const newUrl = role === "admin" ? "/admin/home" : "/user/home";
+      navigate(newUrl);
+
     } catch (err) {
+      console.error("🔴 Σφάλμα κατά το login:", err.response ? err.response.data : err.message);
       setError("Λάθος username ή κωδικός");
     }
   };
@@ -31,7 +52,6 @@ const Login = () => {
       <h2>Σύνδεση</h2>
       {error && <p style={styles.error}>{error}</p>}
       <form onSubmit={handleLogin} style={styles.form}>
-        {/* Username Input */}
         <input
           type="text"
           placeholder="Όνομα Χρήστη"
@@ -40,7 +60,6 @@ const Login = () => {
           required
           style={styles.input}
         />
-        {/* Password Input */}
         <input
           type="password"
           placeholder="Κωδικός"
@@ -49,7 +68,6 @@ const Login = () => {
           required
           style={styles.input}
         />
-        {/* Login Button */}
         <button type="submit" style={styles.button}>Σύνδεση</button>
       </form>
     </div>
