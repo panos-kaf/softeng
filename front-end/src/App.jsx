@@ -7,7 +7,7 @@ import Payments from "./pages/Payments";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 
-const isAuthenticated = () => true; !!localStorage.getItem("token"); // Έλεγχος αν υπάρχει token
+const isAuthenticated = () => !!localStorage.getItem("token"); // Έλεγχος αν υπάρχει token
 
 const ProtectedRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/login" />;
@@ -26,7 +26,7 @@ const App = () => {
                 <Sidebar />
                 <div style={{ flex: 1, padding: "20px" }}>
                   <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/home" element={<Home />} />
                     <Route path="/passes" element={<Passes />} />
                     <Route path="/payments" element={<Payments />} />
                     <Route path="/settings" element={<Settings />} />

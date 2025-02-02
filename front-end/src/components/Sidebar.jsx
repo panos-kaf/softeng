@@ -14,7 +14,7 @@ const Sidebar = () => {
       <h2 style={styles.title}>Admin Dashboard</h2>
       <ul style={styles.list}>
         <li>
-          <NavLink to="/" style={getLinkStyle} end>🏠 Αρχική</NavLink>
+          <NavLink to="/home" style={getLinkStyle} end>🏠 Αρχική</NavLink>
         </li>
         <li>
           <NavLink to="/passes" style={getLinkStyle}>🚗 Διελεύσεις</NavLink>

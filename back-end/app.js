@@ -9,12 +9,19 @@ const mainRouter = require('./api/routes/index');
 const adminRouter = require('./api/admin/index');
 
 const app = express();
-app.use(cors());
+
+//Εγινε Αλλαγή στο παρακάτω
+app.use(cors({
+    origin: "http://localhost:5173", // Επιτρέπει requests από το Frontend
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 // Mount routers
-app.use('/', loginRouter);
+app.use('/api', loginRouter);  // Έγινε αλλαγή εδώ
 app.use('/api', authenticate, mainRouter);
 app.use('/admin', authenticate, adminAuth, adminRouter);
 

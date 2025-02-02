@@ -21,6 +21,13 @@ exports.in = async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
+        
+        // ------------------------------------------------------
+        // encrypt bug check password
+        console.log("Username από frontend:", username);
+        console.log("Password από frontend:", password);
+        console.log("Hashed password από DB:", user.password);
+        //-------------------------------------------------------
 
         // Check the password
         const isPasswordValid = await bcrypt.compare(password, user.password);

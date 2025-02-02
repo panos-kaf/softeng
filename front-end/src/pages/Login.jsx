@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState(""); 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -12,32 +11,36 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-        const response = await axios.post("http://localhost:9115/api/login", {
-            username,
-            password,
-        });
+      const response = await axios.post("http://localhost:9115/api/login", {
+        username,
+        password,
+      });
 
-        localStorage.setItem("token", response.data.token); // Αποθήκευση JWT token
-        navigate("/"); 
+      // Αποθήκευση JWT token στο Local Storage
+      localStorage.setItem("token", response.data.token);
+      
+      // Μετάβαση στο Home
+      navigate("/home");
     } catch (err) {
-        setError("Λάθος username ή κωδικός");
+      setError("Λάθος username ή κωδικός");
     }
-};
-
+  };
 
   return (
     <div style={styles.container}>
       <h2>Σύνδεση</h2>
       {error && <p style={styles.error}>{error}</p>}
       <form onSubmit={handleLogin} style={styles.form}>
+        {/* Username Input */}
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Όνομα Χρήστη"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
           style={styles.input}
         />
+        {/* Password Input */}
         <input
           type="password"
           placeholder="Κωδικός"
@@ -46,24 +49,12 @@ const Login = () => {
           required
           style={styles.input}
         />
+        {/* Login Button */}
         <button type="submit" style={styles.button}>Σύνδεση</button>
-
-    
-        <button 
-            onClick={() => {
-        localStorage.setItem("token", "testToken");
-        navigate("/");
-         }} 
-        style={{ marginTop: "10px", padding: "10px", backgroundColor: "#4CAF50", color: "white", border: "none", cursor: "pointer" }}   
->
-            🚀 Test Login (Παράκαμψη)
-        </button>
-
       </form>
     </div>
   );
 };
-
 
 const styles = {
   container: {
@@ -99,5 +90,5 @@ const styles = {
     color: "red",
   },
 };
-// dasdsadasada
+
 export default Login;
