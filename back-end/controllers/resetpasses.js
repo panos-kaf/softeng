@@ -9,11 +9,10 @@ exports.resetPasses = async(req, res, next) => {
     try {
         const results = [];
         fs.createReadStream(filePath)
-        .pipe(csv())
+        .pipe(csv({ mapHeaders: ({ header }) => header.replace(/^\uFEFF/, "").trim() }))
         .on("data", (data) => results.push(data))
         .on("end", async () => {
             const connection = await db.getConnection();
-
             try {
                 await connection.beginTransaction();
                 await connection.query("DELETE FROM transactions");
@@ -50,7 +49,7 @@ exports.resetPasses = async(req, res, next) => {
                     VALUES (?, ?, ?, ?)
                     `,
                     [
-                        parseDate(row.timestamp, 1), 
+                        row.timestamp,
                         parseFloat(row.charge), 
                         tagID,
                         tollID
