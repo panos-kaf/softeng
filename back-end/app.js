@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 // Mount routers
-app.use('/api', loginRouter);  // Έγινε αλλαγή εδώ
+app.use('/', loginRouter);  // Έγινε αλλαγή εδώ
 app.use('/api', authenticate, mainRouter);
 app.use('/admin', authenticate, adminAuth, adminRouter);
 

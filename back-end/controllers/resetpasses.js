@@ -1,5 +1,5 @@
 const db = require('../utils/db');
-const {parseDate,formatDate} = require('../utils/date_conversion');
+const {parseDate} = require('../utils/date_conversion');
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -43,14 +43,14 @@ exports.resetPasses = async(req, res, next) => {
             
                 const tagID = tagRows.length > 0 ? tagRows[0].id : null;
                 const tollID = tollRows.length > 0 ? tollRows[0].id : null;
-                
+
                 await connection.query(
                     `
                     INSERT INTO transactions (timestamp, charge, tag_id, toll_station_id)
                     VALUES (?, ?, ?, ?)
                     `,
                     [
-                        parseDate(row.timestamp), 
+                        parseDate(row.timestamp, 1), 
                         parseFloat(row.charge), 
                         tagID,
                         tollID
