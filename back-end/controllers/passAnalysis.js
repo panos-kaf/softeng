@@ -17,14 +17,13 @@ exports.getPassAnalysis = async (req, res, next) => {
         const { fromDate, toDate } = calculateDatePeriod(date_from, date_to);
         try {
             const query = `
-                SELECT t.*
-                FROM transactions t
-                JOIN toll_stations ts ON t.toll_station_id = ts.id
-                JOIN operators o ON ts.operator_id = o.id
-                JOIN tags tg ON t.tag_id = tg.id
-                WHERE o.id = (SELECT id FROM operators WHERE op_id = ?)
-                  AND tg.id = (SELECT id FROM tags WHERE tag_ref = ?)
-                  AND t.timestamp BETWEEN ? AND ?;
+                SELECT trans.id, trans.charge, t_s.toll_id, tg.tag_ref
+                FROM transactions trans
+                JOIN toll_stations t_s ON trans.toll_station_id = t_s.id
+                JOIN tags tg ON trans.tag_id = tg.id
+                JOIN operators tollOps ON t_s.operator_id = tollOps.id AND tollOps.op_id = ?
+                JOIN operators tagOps ON tg.operator_id = tagOps.id AND tagOps.op_id = ?
+                WHERE trans.timestamp BETWEEN ? AND ?;
             `;
 
             // Execute query
@@ -33,7 +32,7 @@ exports.getPassAnalysis = async (req, res, next) => {
             // Respond with results
             return res.status(200).json(results);
         } catch (error) {
-            
+
             console.error("Database Error:", error.message); // Log the error
             return res.status(500).json({ message: "Internal Server Error" });
         }
