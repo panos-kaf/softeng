@@ -147,3 +147,6 @@ const styles = {
     overflowX: "auto",
   },
 };
+
+
+export default Settings;

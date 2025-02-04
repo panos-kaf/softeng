@@ -14,18 +14,18 @@ const Login = () => {
     try {
       console.log("🔵 Αποστολή Login Request:", { username, password });
 
-      const response = await axios.post("http://localhost:9115/api/login", {
+      const response = await axios.post("http://localhost:9115/login", {
         username,
         password,
       });
 
-      console.log("✅ API Response:", response.data);
+      console.log("API Response:", response.data);
 
       // Πάρε το token και το role από το API response
       const { token, role } = response.data;
 
       if (!token || !role) {
-        console.error("❌ Το API δεν επέστρεψε σωστά το token ή το role!");
+        console.error("Το API δεν επέστρεψε σωστά το token ή το role!");
         setError("Σφάλμα σύνδεσης. Δοκίμασε ξανά.");
         return;
       }
@@ -34,15 +34,15 @@ const Login = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
 
-      console.log("✅ Token αποθηκεύτηκε:", token);
-      console.log("✅ Role αποθηκεύτηκε:", role);
+      console.log("Token αποθηκεύτηκε:", token);
+      console.log("Role αποθηκεύτηκε:", role);
 
       // Ανακατεύθυνση στο σωστό Dashboard
       const newUrl = role === "admin" ? "/admin/home" : "/user/home";
       navigate(newUrl);
 
     } catch (err) {
-      console.error("🔴 Σφάλμα κατά το login:", err.response ? err.response.data : err.message);
+      console.error("Σφάλμα κατά το login:", err.response ? err.response.data : err.message);
       setError("Λάθος username ή κωδικός");
     }
   };
