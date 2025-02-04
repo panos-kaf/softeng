@@ -61,7 +61,7 @@ const Settings = () => {
                 style={styles.moreButton} 
                 onClick={() => setShowDetails(!showDetails)}
               >
-                {showDetails ? "⬆ Απόκρυψη" : "🔍 Περισσότερα"}
+                {showDetails ? "⬆ Απόκρυψη" : "Περισσότερα"}
               </button>
 
               {showDetails && (
