@@ -33,6 +33,7 @@ exports.getPassAnalysis = async (req, res, next) => {
             // Respond with results
             return res.status(200).json(results);
         } catch (error) {
+            
             console.error("Database Error:", error.message); // Log the error
             return res.status(500).json({ message: "Internal Server Error" });
         }
