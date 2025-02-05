@@ -4,13 +4,13 @@ const http = require('http');
 const https = require('https');
 const app = require('./app');
 
-const HTTP_PORT = process.env.HTTP_PORT || 9115;
-const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+const HTTP_PORT = process.env.HTTP_PORT || 9114;
+const HTTPS_PORT = process.env.HTTPS_PORT || 9115;
 const HOST = process.env.APP_HOST || 'localhost';
 
 const options = {
-    key: fs.readFileSync('./cert/key.pem'),
-    cert: fs.readFileSync('./cert/cert.pem')
+    key: fs.readFileSync(process.env.SSL_KEY),
+    cert: fs.readFileSync(process.env.SSL_CERT)
 }
 
 https.createServer(options, app).listen(HTTPS_PORT, () => {
