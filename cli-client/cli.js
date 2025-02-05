@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
+require("dotenv").config();
 const { Command } = require('commander');
 const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
 const db = require('../back-end/utils/db');
 
-const PORT = 443;
-const HOST = 'localhost';
-const ROUTE = `https://${HOST}:${PORT}/api`;
+const PORT = 9115;
+const HOST = 'https://localhost';
+const ROUTE = `${HOST}:${PORT}/api`;
 const ADMIN_ROUTE = `${ROUTE}/admin`;
 
 const validFormats = ['json', 'csv'];
@@ -41,7 +42,7 @@ program
     try {
       
       const { username, password } = options;
-      const response = await axios.post(`${ROUTE}/login`, {
+      const response = await axios.post(`${HOST}:${PORT}/login`, {
         username,
         password
       });
@@ -83,10 +84,13 @@ program
     try {
       const { format } = options;
 
+      const token = getToken();
+
       // Send format as a query parameter
       const response = await axios.get(`${ADMIN_ROUTE}/healthcheck`, {
-        params: { format }
-      });
+        params: { format },
+        headers: { 'x-observatory-auth': token}}
+      );
 
       console.log(response.data); // API already returns the correct format
     } catch (error) {
@@ -108,9 +112,13 @@ program
     try {
       const { format } = options;
 
+      const token = getToken();
+
       // Send format as a query parameter
-      const response = await axios.get(`${ROUTE}resetstations`, {
-        params: { format }
+      const response = await axios.post(`${ADMIN_ROUTE}/resetstations`, 
+        {},{
+        params: { format },
+        headers: { 'x-observatory-auth': token }
       });
 
       console.log(response.data); // API already returns the correct format
@@ -137,9 +145,13 @@ program
     try {
       const { format } = options;
 
+      const token = getToken();
+
       // Send format as a query parameter
-      const response = await axios.get(`${ADMIN_ROUTE}/resetpasses`, {
-        params: { format }
+      const response = await axios.post(`${ADMIN_ROUTE}/resetpasses`, 
+        {},{
+        params: { format },
+        headers: { 'x-observatory-auth': token }
       });
 
       console.log(response.data); // API already returns the correct format
@@ -148,9 +160,6 @@ program
     
     }
   });
-
-
-  const token = getToken(); // Retrieve the token
 
   program
   .command('tollstationpasses')
@@ -168,17 +177,9 @@ program
   .action(async (options) => {
     try {
 
-      
       const token = getToken(); // Retrieve the token
 
-      if (!token) {
-        console.error('You must be logged in to access this command. Use `se2411 login --username --password`.');
-        return;
-      }
-
-  
       const { station, from, to, format } = options;
-
 
       if (!station) {
         console.error('Please provide a station using --station.');
@@ -198,7 +199,7 @@ program
 
       const response = await axios.get(`${ROUTE}/tollStationPasses`, {
         params: { station, from, to, format },
-        headers: { Authorization: `Bearer ${token}` } //  Send token in the request
+        headers: { 'x-observatory-auth': token } //  Send token in the request
       });
 
       console.log(response.data); // API already returns the correct format
@@ -213,6 +214,7 @@ program
   .command('passanalysis')
   .description('Analize passes according to station and period')
   .option('-s, --stationop <stationop>', 'Specify the stationop (op1)')
+  .option('--tagop <tagop>', 'Specify the tagop (op2)')
   .option('-d, --from <from> ', 'Specify the starting date (datefrom)')
   .option('-t, --to <to>', 'Specify the ending date (dateto)')
   .option('-f, --format <format>', 'Specify the output format (json or csv)', (value) => {
@@ -225,17 +227,9 @@ program
   .action(async (options) => {
     try {
 
-      
+      const { stationop, tagop, from, to, format } = options;
 
-      if (!token) {
-        console.error('You must be logged in to access this command. Use `se2411 login --username --password`.');
-        return;
-      }
-
-      const { station, from, to, format } = options;
-
-
-      if (!station) {
+      if (!stationop) {
         console.error('Please provide a station using --station.');
         return;
       }
@@ -249,10 +243,12 @@ program
         return;
       }
 
+      const token = getToken();
+
       // Send format as a query parameter
       const response = await axios.get(`${ROUTE}/passAnalysis`, {
-        params: { station, from, to, format },
-        headers: { Authorization: `Bearer ${token}` } //  Send token in the request
+        params: { stationop, tagop, from, to, format },
+        headers: { 'x-observatory-auth': token } //  Send token in the request
       });
 
       console.log(response.data); // API already returns the correct format
@@ -270,15 +266,7 @@ program
   .action(async (options) => {
     try {
 
-      
-
-      if (!token) {
-        console.error('You must be logged in to access this command. Use `se2411 login --username --password`.');
-        return;
-      }
-
       const { station, from, to} = options;
-
 
       if (!station) {
         console.error('Please provide a station using --station.');
@@ -294,11 +282,13 @@ program
         return;
       }
 
+      const token = getToken();
+
       const format = 'csv';
       // Send format as a query parameter
       const response = await axios.get(`${ROUTE}/passesCost`, {
         params: { station, from, to, format },
-        headers: { Authorization: `Bearer ${token}` } //  Send token in the request
+        headers: { 'x-observatory-auth': token } //  Send token in the request
       });
 
       console.log(response.data); // API already returns the correct format
@@ -316,14 +306,7 @@ program
   .action(async (options) => {
     try {
 
-
-      if (!token) {
-        console.error('You must be logged in to access this command. Use `se2411 login --username --password`.');
-        return;
-      }
-
       const { op, from, to} = options;
-
 
       if (!op) {
         console.error('Please provide a station using --station.');
@@ -339,11 +322,13 @@ program
         return;
       }
 
+      const token = getToken();
+
       const format = 'csv';
       // Send format as a query parameter
       const response = await axios.get(`${ROUTE}/chargesBy`, {
         params: { op, from, to, format },
-        headers: { Authorization: `Bearer ${token}` } //  Send token in the request
+        headers: { 'x-observatory-auth': token } //  Send token in the request
       });
 
       console.log(response.data); // API already returns the correct format
@@ -365,11 +350,6 @@ program
   .action(async (options) => {
     try {
       const token = getToken();
-      if (!token) {
-        console.error('You must be logged in as an admin to perform this action.');
-        return;
-      }
-
 
       if (options.usermod) {
         const { username, password } = options;
@@ -379,7 +359,7 @@ program
         }
 
         try {
-          const hashedPassword = await bcrypt.hash(password, saltRounds);
+          const hashedPassword = await bcrypt.hash(password, 10);
           await db.execute(
             'INSERT INTO users (username, password) VALUES (?, ?) ON DUPLICATE KEY UPDATE password = VALUES(password)',
             [username, hashedPassword]
@@ -413,9 +393,11 @@ program
        const formData = new FormData();
         formData.append('csv', fs.createReadStream(options.source));
 
-        const response = await axios.post(`${ADMIN_ROUTE}/addpasses`,formData, {
-          headers: { 
-            Authorization: `Bearer ${token}`,
+        const response = await axios.post(`${ADMIN_ROUTE}/addpasses`,formData, 
+          {}, 
+          {
+            headers: { 
+            'x-observatory-auth': token,
             ...formData.getHeaders()
            } 
         });
