@@ -410,11 +410,14 @@ program
           return;
         }
 
-        const csvData = fs.readFileSync(options.source, 'utf-8');
+       const formData = new FormData();
+        formData.append('csv', fs.createReadStream(options.source));
 
-        const response = await axios.post(`https://localhost:9115/api/admin/addpasses`, {
-          csv: csvData,
-          headers: { Authorization: `Bearer ${token}` } 
+        const response = await axios.post(`https://localhost:9115/api/admin/addpasses`,formData, {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            ...formData.getHeaders()
+           } 
         });
 
         console.log(response.data.message || 'Passes added successfully.');
