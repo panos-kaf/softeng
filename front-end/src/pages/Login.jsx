@@ -16,7 +16,7 @@ const Login = () => {
     try {
       console.log("🔵 Αποστολή Login Request:", { username, password });
 
-      const response = await axios.post(`${ROUTE}/login`, {
+      const response = await axios.post(`${ROUTE}/login`), {
       const response = await axios.post("https://localhost:9115/login", {
         username,
         password,
