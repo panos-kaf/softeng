@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-require("dotenv").config();
+require('dotenv').config({ path: '../back-end/.env' });
 const { Command } = require('commander');
 const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
 const db = require('../back-end/utils/db');
 
-const PORT = 9115;
-const HOST = 'https://localhost';
-const ROUTE = `${HOST}:${PORT}/api`;
+const PORT = process.env.HTTPS_PORT;
+const HOST = process.env.APP_HOST;
+const ROUTE = `https://${HOST}:${PORT}/api`;
 const ADMIN_ROUTE = `${ROUTE}/admin`;
 
 const validFormats = ['json', 'csv'];
@@ -40,9 +40,9 @@ program
   .description('Authenticate the user and store the token')
   .action(async (options) => {
     try {
-      
+      console.log(HOST, PORT);
       const { username, password } = options;
-      const response = await axios.post(`${HOST}:${PORT}/login`, {
+      const response = await axios.post(`https://${HOST}:${PORT}/login`, {
         username,
         password
       });
@@ -410,6 +410,5 @@ program
       console.error('Admin command failed:', error.response?.data || error.message);
     }
   });
-    
 
 program.parse(process.argv);
