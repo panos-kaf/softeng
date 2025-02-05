@@ -10,6 +10,6 @@ export default defineConfig({
       cert: fs.readFileSync('../back-end/cert/localhost-cert.pem'),
     },
     host: 'localhost',
-    port: 5173, // Ensure this matches your frontend port
+    port: 5173,
   },
 })
