@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 // Mount routers
-app.use('/', loginRouter);  // Έγινε αλλαγή εδώ
+app.use('/', loginRouter);
 app.use('/api', authenticate, apiRouter);
 
 app.use((err, req, res, next) => {
