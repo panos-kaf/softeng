@@ -5,8 +5,7 @@ const authenticate = require('./middleware/auth');
 const adminAuth = require('./middleware/adminAuth');
 
 const loginRouter = require('./api/log');
-const mainRouter = require('./api/routes/index');
-const adminRouter = require('./api/admin/index');
+const apiRouter = require('./api/routes/index');
 
 const app = express();
 
@@ -22,8 +21,7 @@ app.use(express.urlencoded({extended: true}));
 
 // Mount routers
 app.use('/', loginRouter);  // Έγινε αλλαγή εδώ
-app.use('/api', authenticate, mainRouter);
-app.use('/admin', authenticate, adminAuth, adminRouter);
+app.use('/api', authenticate, apiRouter);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

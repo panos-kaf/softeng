@@ -1,6 +1,6 @@
 const express = require('express');
-const authenticate = require('../../middleware/auth');
-const healthcheckController = require('../../controllers/healthcheck');
+const authenticate = require('../../../middleware/auth');
+const healthcheckController = require('../../../controllers/healthcheck');
 
 const router = express.Router();
 
