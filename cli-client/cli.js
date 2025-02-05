@@ -6,6 +6,10 @@ const fs = require('fs');
 const path = require('path');
 const db = require('../back-end/utils/db');
 
+const PORT = 443;
+const HOST = 'localhost';
+const ROUTE = `https://${HOST}:${PORT}/api`;
+const ADMIN_ROUTE = `${ROUTE}/admin`;
 
 const validFormats = ['json', 'csv'];
 const TOKEN_PATH = path.join(__dirname, 'token.json'); // Path to store the token
@@ -37,7 +41,7 @@ program
     try {
       
       const { username, password } = options;
-      const response = await axios.post('https://localhost:9115/api/log', {
+      const response = await axios.post(`${ROUTE}/login`, {
         username,
         password
       });
@@ -55,7 +59,6 @@ program
     }
   });
 
-
   program
   .command('logout')
   .description('Clear the stored token')
@@ -65,8 +68,6 @@ program
     }
     console.log('Logout successful! Token cleared.');
   });
-
-
 
 program
   .command('healthcheck')
@@ -83,7 +84,7 @@ program
       const { format } = options;
 
       // Send format as a query parameter
-      const response = await axios.get('https://localhost:9115/api/admin/healthcheck', {
+      const response = await axios.get(`${ADMIN_ROUTE}/healthcheck`, {
         params: { format }
       });
 
@@ -92,8 +93,6 @@ program
       console.error('Healthcheck failed:', error.response?.data || error.message);
       }
   });
-
-
 
 program
   .command('resetstations')
@@ -110,7 +109,7 @@ program
       const { format } = options;
 
       // Send format as a query parameter
-      const response = await axios.get('https://localhost:9115/api/admin/resetstations', {
+      const response = await axios.get(`${ROUTE}resetstations`, {
         params: { format }
       });
 
@@ -139,7 +138,7 @@ program
       const { format } = options;
 
       // Send format as a query parameter
-      const response = await axios.get('https://localhost:9115/api/admin/resetpasses', {
+      const response = await axios.get(`${ADMIN_ROUTE}/resetpasses`, {
         params: { format }
       });
 
@@ -196,7 +195,8 @@ program
       }
 
       // Send format as a query parameter
-      const response = await axios.get('https://localhost:9115/api/tollStationPasses', {
+
+      const response = await axios.get(`${ROUTE}/tollStationPasses`, {
         params: { station, from, to, format },
         headers: { Authorization: `Bearer ${token}` } //  Send token in the request
       });
@@ -250,7 +250,7 @@ program
       }
 
       // Send format as a query parameter
-      const response = await axios.get('https://localhost:9115/api/passAnalysis', {
+      const response = await axios.get(`${ROUTE}/passAnalysis`, {
         params: { station, from, to, format },
         headers: { Authorization: `Bearer ${token}` } //  Send token in the request
       });
@@ -296,7 +296,7 @@ program
 
       const format = 'csv';
       // Send format as a query parameter
-      const response = await axios.get('http://localhost:9115/api/passesCost', {
+      const response = await axios.get(`${ROUTE}/passesCost`, {
         params: { station, from, to, format },
         headers: { Authorization: `Bearer ${token}` } //  Send token in the request
       });
@@ -341,7 +341,7 @@ program
 
       const format = 'csv';
       // Send format as a query parameter
-      const response = await axios.get('https://localhost:9115/api/chargesBy', {
+      const response = await axios.get(`${ROUTE}/chargesBy`, {
         params: { op, from, to, format },
         headers: { Authorization: `Bearer ${token}` } //  Send token in the request
       });
@@ -413,7 +413,7 @@ program
        const formData = new FormData();
         formData.append('csv', fs.createReadStream(options.source));
 
-        const response = await axios.post(`https://localhost:9115/api/admin/addpasses`,formData, {
+        const response = await axios.post(`${ADMIN_ROUTE}/addpasses`,formData, {
           headers: { 
             Authorization: `Bearer ${token}`,
             ...formData.getHeaders()
