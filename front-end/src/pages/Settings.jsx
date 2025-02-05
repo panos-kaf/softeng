@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios"; 
 
+const ROUTE = `https://localhost:9115`;
+const API_ROUTE = `${ROUTE}/api`;
+const ADMIN_ROUTE = `${API_ROUTE}/admin`;
+
 const Settings = () => {
   const [healthStatus, setHealthStatus] = useState(null); 
   const [showDetails, setShowDetails] = useState(false); 
@@ -17,7 +21,7 @@ const Settings = () => {
       }
 
       console.log("📡 Στέλνουμε request στο API...");
-      const response = await axios.get("https://localhost:9115/api/admin/healthcheck", {
+      const response = await axios.get(`${ADMIN_ROUTE}/healthcheck`, {
         headers: { "x-observatory-auth": token }, 
       });
 
