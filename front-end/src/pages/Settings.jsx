@@ -17,7 +17,7 @@ const Settings = () => {
       }
 
       console.log("📡 Στέλνουμε request στο API...");
-      const response = await axios.get("http://localhost:9115/admin/healthcheck", {
+      const response = await axios.get("https://localhost:9115/api/admin/healthcheck", {
         headers: { "x-observatory-auth": token }, 
       });
 
