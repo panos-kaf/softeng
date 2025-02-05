@@ -1,6 +1,26 @@
 require('dotenv').config();
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 const app = require('./app');
 
-const PORT = process.env.PORT || 9115;
+const HTTP_PORT = process.env.HTTP_PORT || 9115;
+const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+const HOST = process.env.APP_HOST || 'localhost';
 
-app.listen(PORT, () => console.log('Server is running on port ' + PORT));
+const options = {
+    key: fs.readFileSync('./cert/key.pem'),
+    cert: fs.readFileSync('./cert/cert.pem')
+}
+
+https.createServer(options, app).listen(HTTPS_PORT, () => {
+    console.log(`Server is running on https://localhost:${HTTPS_PORT}`);
+})
+
+http.createServer((req, res) => {
+    console.log(`Redirecting HTTP request: ${req.url}`);
+    res.writeHead(301, { "Location": `https://${HOST}:${HTTPS_PORT}${req.url}` });
+    res.end();
+}).listen(HTTP_PORT, () => {
+    console.log(`HTTP to HTTPS Redirect Server running on http://${HOST}:${HTTP_PORT}`);
+});

@@ -16,7 +16,6 @@ exports.getPassesCost = async (req, res) => {
         const {fromDate, toDate} = calculateDatePeriod(date_from, date_to, res);
         try {
             // Query to calculate the cost of passes
-
             const query = `
                 SELECT COUNT(*) AS nPasses, SUM(charge) AS passesCost
                 FROM transactions trans

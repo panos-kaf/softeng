@@ -12,7 +12,7 @@ const app = express();
 
 //Εγινε Αλλαγή στο παρακάτω
 app.use(cors({
-    origin: "http://localhost:5173", // Επιτρέπει requests από το Frontend
+    origin: "https://localhost:"+process.env.FRONTEND_PORT, // Επιτρέπει requests από το Frontend
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));
