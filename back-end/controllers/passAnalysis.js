@@ -17,7 +17,7 @@ exports.getPassAnalysis = async (req, res, next) => {
         const { fromDate, toDate } = calculateDatePeriod(date_from, date_to);
         try {
             const query = `
-                SELECT trans.id, trans.charge, t_s.toll_id, tg.tag_ref
+                SELECT trans.id, trans.charge, t_s.toll_id, tg.tag_ref, trans.timestamp
                 FROM transactions trans
                 JOIN toll_stations t_s ON trans.toll_station_id = t_s.id
                 JOIN tags tg ON trans.tag_id = tg.id
@@ -29,16 +29,12 @@ exports.getPassAnalysis = async (req, res, next) => {
             // Execute query
             const [results] = await db.execute(query, [stationOpID, tagOpID, fromDate, toDate]);
 
-            // Respond with results
-            return res.status(200).json(results);
-
             const passes = results.map(result => ({
                 passID: result.passID,
-                passTimestamp: result.timestamp,
-                tagID: result.tagID,
-                tagProvider: result.tagProvider,
-                passType: result.passType,
-                passCharge: result.passCharge
+                stationID: result.toll_id,
+                timestamp: result.timestamp,
+                tagID: result.tag_ref,
+                passCharge: result.charge
             }));
 
             res.status(200).json({
