@@ -25,12 +25,7 @@ exports.getPassesInDateRange = async (req, res, next) => {
                 CASE 
                     WHEN tag_provider.id = ts.operator_id THEN 'home' 
                     ELSE 'visitor' 
-                END AS passType,
-                (SELECT COUNT(*) 
-                FROM transactions t2 
-                JOIN toll_stations ts2 ON t2.toll_station_id = ts2.id
-                WHERE ts2.id = ts.id 
-                AND t2.timestamp BETWEEN ? AND ?) AS nPasses
+                END AS passType
                 FROM 
                     transactions t
                 JOIN 
@@ -46,7 +41,7 @@ exports.getPassesInDateRange = async (req, res, next) => {
                     t.timestamp;
             `;
 
-            const [results] = await db.execute(query, [fromDate, toDate, tollStationID, fromDate, toDate]);
+            const [results] = await db.execute(query, [tollStationID, fromDate, toDate]);
             
             const passes = results.map(result => ({
                 passID: result.passID,
@@ -56,10 +51,11 @@ exports.getPassesInDateRange = async (req, res, next) => {
                 passType: result.passType,
                 passCharge: result.passCharge
             }));
+
             res.status(200).json({
                 periodFrom: fromDate,
                 periodTo : toDate,
-                nPasses : results[0].nPasses,
+                nPasses : passes.length,
                 passList : passes
             });
         } catch (error) {

@@ -31,6 +31,22 @@ exports.getPassAnalysis = async (req, res, next) => {
 
             // Respond with results
             return res.status(200).json(results);
+
+            const passes = results.map(result => ({
+                passID: result.passID,
+                passTimestamp: result.timestamp,
+                tagID: result.tagID,
+                tagProvider: result.tagProvider,
+                passType: result.passType,
+                passCharge: result.passCharge
+            }));
+
+            res.status(200).json({
+                periodFrom: fromDate,
+                periodTo : toDate,
+                nPasses : passes.length,
+                passList : passes
+            });
         } catch (error) {
 
             console.error("Database Error:", error.message); // Log the error
