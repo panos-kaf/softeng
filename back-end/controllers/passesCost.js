@@ -25,20 +25,6 @@ exports.getPassesCost = async (req, res) => {
                 JOIN operators tagOps ON tg.operator_id = tagOps.id AND tagOps.op_id = ?
                 WHERE trans.timestamp BETWEEN ? AND ?;
                 `;
-                
-            const query_old = `
-                SELECT COUNT(*) AS nPasses, SUM(charge) AS passesCost
-                FROM transactions
-                WHERE toll_station_id IN (
-                    SELECT id FROM toll_stations WHERE operator_id = (
-                        SELECT id FROM operators WHERE operator_id = ?)
-                )
-                AND tag_id IN (
-                    SELECT id FROM tags WHERE operator_id = (
-                        SELECT id FROM operators WHERE operator_id = ?)
-                )
-                AND timestamp BETWEEN ? AND ?
-            `;
     
             const [results] = await db.execute(query, [tollOpID, tagOpID, fromDate, toDate]);
     

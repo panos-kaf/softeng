@@ -14,24 +14,54 @@ exports.getPassesInDateRange = async (req, res, next) => {
     try{
         const {fromDate, toDate} = calculateDatePeriod(date_from, date_to);
         try {
-            console.log(`
-            Fetching passes on ${process.env.DB}
-            for ${tollStationID}
-            from ${fromDate} 
-            to ${toDate}`);
-    
+
             const query = `
-                SELECT * 
-                FROM transactions 
-                WHERE toll_station_id = (
-                SELECT id 
-                FROM toll_stations
-                WHERE toll_id = ?
-                ) AND TimeStamp BETWEEN ? AND ?;
+                SELECT 
+                t.id AS passID, 
+                t.timestamp AS timestamp, 
+                t.charge AS passCharge, 
+                tg.tag_ref AS tagID, 
+                tag_provider.name AS tagProvider,
+                CASE 
+                    WHEN tag_provider.id = ts.operator_id THEN 'home' 
+                    ELSE 'visitor' 
+                END AS passType,
+                (SELECT COUNT(*) 
+                FROM transactions t2 
+                JOIN toll_stations ts2 ON t2.toll_station_id = ts2.id
+                WHERE ts2.id = ts.id 
+                AND t2.timestamp BETWEEN ? AND ?) AS nPasses
+                FROM 
+                    transactions t
+                JOIN 
+                    toll_stations ts ON t.toll_station_id = ts.id
+                JOIN 
+                    tags tg ON t.tag_id = tg.id
+                JOIN
+                    operators tag_provider ON tg.operator_id = tag_provider.id
+                WHERE 
+                    ts.toll_id = ? 
+                    AND t.timestamp BETWEEN ? AND ?
+                ORDER BY 
+                    t.timestamp;
             `;
-            const [results] = await db.execute(query, [tollStationID, fromDate, toDate]);
-    
-            res.status(200).json(results);
+
+            const [results] = await db.execute(query, [fromDate, toDate, tollStationID, fromDate, toDate]);
+            
+            const passes = results.map(result => ({
+                passID: result.passID,
+                passTimestamp: result.timestamp,
+                tagID: result.tagID,
+                tagProvider: result.tagProvider,
+                passType: result.passType,
+                passCharge: result.passCharge
+            }));
+            res.status(200).json({
+                periodFrom: fromDate,
+                periodTo : toDate,
+                nPasses : results[0].nPasses,
+                passList : passes
+            });
         } catch (error) {
             console.error("Error fetching toll station passes:", error);
             res.status(500).json({ error: "Internal Server Error" });
