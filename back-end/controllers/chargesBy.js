@@ -41,7 +41,7 @@ exports.getChargesBy = async (req, res) => {
             const [results] = await db.execute(query, [tollOpID, fromDate, toDate]);
 
             if (!results.length) {
-                return res.status(204).json(); // No content
+                return res.status(204).json({ message: 'No content' });
             }
     
             res.status(200).json({
