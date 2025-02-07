@@ -9,6 +9,8 @@ const apiRouter = require('./api/routes/index');
 
 const app = express();
 
+require('./cron/scheduleJobs');
+
 //Εγινε Αλλαγή στο παρακάτω
 app.use(cors({
     origin: "https://localhost:"+process.env.FRONTEND_PORT, // Επιτρέπει requests από το Frontend
