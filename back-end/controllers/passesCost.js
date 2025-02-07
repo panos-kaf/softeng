@@ -29,7 +29,7 @@ exports.getPassesCost = async (req, res) => {
             const [results] = await db.execute(query, [tollOpID, tagOpID, fromDate, toDate]);
     
             // Handle response
-            if (results.length === 0) {
+            if (!results.length) {
                 return res.status(204).json({ message: 'No content' }); 
             }
             res.status(200).json({

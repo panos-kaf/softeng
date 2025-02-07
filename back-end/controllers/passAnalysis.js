@@ -29,6 +29,10 @@ exports.getPassAnalysis = async (req, res, next) => {
             // Execute query
             const [results] = await db.execute(query, [stationOpID, tagOpID, fromDate, toDate]);
 
+            if (!results.length) {
+                return res.status(204).json({ message: 'No content' });
+            } 
+
             const passes = results.map(result => ({
                 passID: result.passID,
                 stationID: result.toll_id,

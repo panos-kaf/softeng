@@ -42,6 +42,10 @@ exports.getPassesInDateRange = async (req, res, next) => {
             `;
 
             const [results] = await db.execute(query, [tollStationID, fromDate, toDate]);
+
+            if (!results.length) {
+                return res.status(204).json({ message: 'No content' }); 
+            }
             
             const passes = results.map(result => ({
                 passID: result.passID,
