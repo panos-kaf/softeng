@@ -16,25 +16,30 @@ exports.getChargesBy = async (req, res) => {
         try {
             // SQL Query to get charges by visiting operators
             const query = `
-                SELECT 
-                    tags.operator_id AS visitingOpID,
+                SELECT
+                    vOps.op_id AS visitingOpID, 
                     COUNT(*) AS nPasses,
                     SUM(transactions.charge) AS passesCost
                 FROM 
                     transactions
+                JOIN
+                    operators tollOp 
                 JOIN 
-                    toll_stations ON transactions.toll_station_id = toll_stations.id
+                    toll_stations ON tollOp.id = toll_stations.operator_id
                 JOIN 
-                    tags ON transactions.tag_id = tags.id
+                    tags vtags ON transactions.tag_id = vtags.id
+                JOIN 
+                    operators vOps ON vtags.operator_id = vOps.id
                 WHERE 
-                    toll_stations.operator_id = ? 
+                    tollOp.op_id = ?
+                    AND vOps.id != toll_stations.operator_id
                     AND transactions.timestamp BETWEEN ? AND ?
                 GROUP BY 
-                    tags.operator_id;
+                    vtags.operator_id;
             `;
     
             const [results] = await db.execute(query, [tollOpID, fromDate, toDate]);
-            
+
             if (!results.length) {
                 return res.status(204).json(); // No content
             }
@@ -44,7 +49,7 @@ exports.getChargesBy = async (req, res) => {
                 requestTimestamp: new Date().toISOString(),
                 periodFrom: fromDate,
                 periodTo: toDate,
-                visitingOperators: results.map((row) => ({
+                vOpList: results.map((row) => ({
                     visitingOpID: row.visitingOpID,
                     nPasses: row.nPasses,
                     passesCost: row.passesCost || 0.0,
