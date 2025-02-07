@@ -1,5 +1,5 @@
 const express = require('express');
-const tollStationPassesController = require('../../controllers/tollStationPasses');
+const tollStationPassesController = require('../controllers/tollStationPasses');
 
 const router = express.Router();
 

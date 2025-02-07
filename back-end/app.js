@@ -2,10 +2,9 @@ const express = require('express');
 const cors = require('cors');
 
 const authenticate = require('./middleware/auth');
-const adminAuth = require('./middleware/adminAuth');
 
 const loginRouter = require('./api/log');
-const apiRouter = require('./api/routes/index');
+const apiRouter = require('./api/index');
 
 const app = express();
 
