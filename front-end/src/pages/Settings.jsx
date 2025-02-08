@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios"; 
 
-const ROUTE = `https://localhost:9115`;
+const ROUTE = `https://localhost:9115`; 
 const API_ROUTE = `${ROUTE}/api`;
 const ADMIN_ROUTE = `${API_ROUTE}/admin`;
 
 const Settings = () => {
   const [healthStatus, setHealthStatus] = useState(null); 
+  const [resetStatus, setResetStatus] = useState(null); 
   const [showDetails, setShowDetails] = useState(false); 
+  const [resetPasses, setResetPassesStatus] = useState(null);
 
+  /** 📡 Healthcheck */
   const handleHealthcheck = async () => {
     try {
       console.log("📡 Healthcheck request ξεκίνησε...");
@@ -16,7 +19,7 @@ const Settings = () => {
       const token = localStorage.getItem("token"); 
       if (!token) {
         console.error("No token found in localStorage!");
-        setHealthStatus({ message: " Δεν βρέθηκε token!", error: true });
+        setHealthStatus({ message: "Δεν βρέθηκε token!", error: true });
         return;
       }
 
@@ -25,21 +28,120 @@ const Settings = () => {
         headers: { "x-observatory-auth": token }, 
       });
 
-      console.log("Healthcheck επιτυχές:", response.data);
+      console.log("✅ Healthcheck επιτυχές:", response.data);
       setHealthStatus({
-        message: "Σύνδεση με τον server επιτυχής!",
+        message: "✅ Σύνδεση με τον server επιτυχής!",
         data: response.data,
         error: false,
       });
 
     } catch (error) {
-      console.error("Healthcheck request απέτυχε:", error);
+      console.error("❌ Healthcheck request απέτυχε:", error);
       setHealthStatus({
-        message: ` Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
+        message: `❌ Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
         error: true,
       });
     }
   };
+
+  /** 🛠 Reset Stations */
+  const handleResetStations = async () => {
+    try {
+      console.log("🛠 Reset Stations request ξεκίνησε...");
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("❌ No token found in localStorage!");
+        setResetStatus({ message: "❌ Δεν βρέθηκε token!", error: true });
+        return;
+      }
+
+      console.log("🛠 Στέλνουμε request στο API...");
+      const response = await axios.post(`${ADMIN_ROUTE}/resetstations`, {}, {
+        headers: { "x-observatory-auth": token },
+      });
+
+      console.log("✅ Reset Stations επιτυχές:", response.data);
+      setResetStatus({
+        message: "✅ Επαναφορά σταθμών διοδίων ολοκληρώθηκε!",
+        data: response.data,
+        error: false,
+      });
+
+    } catch (error) {
+      console.error("❌ Reset Stations request απέτυχε:", error);
+      setResetStatus({
+        message: `❌ Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
+        error: true,
+      });
+    }
+  };
+
+/** 🛠 Reset Passes */
+const handleResetPasses = async () => {
+  try {
+    console.log("🛠 Reset Passes request ξεκίνησε...");
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("❌ No token found in localStorage!");
+      setResetStatus({ message: "❌ Δεν βρέθηκε token!", error: true });
+      return;
+    }
+
+    console.log("🛠 Στέλνουμε request στο API...");
+    const response = await axios.post(`${ADMIN_ROUTE}/resetpasses`, {}, {
+      headers: { "x-observatory-auth": token },
+    });
+
+    console.log("✅ Reset Passes επιτυχές:", response.data);
+    setResetStatus({
+      message: "✅ Επαναφορά των διελεύσεων ολοκληρώθηκε!",
+      data: response.data,
+      error: false,
+    });
+
+  } catch (error) {
+    console.error("❌ Reset Passes request απέτυχε:", error);
+    setResetStatus({
+      message: `❌ Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
+      error: true,
+    });
+  }
+};
+
+/** 🛠 Add Passes  */
+const handleAddPasses = async () => {
+  try {
+    console.log("🛠 Add Passes request ξεκίνησε...");
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("❌ No token found in localStorage!");
+      setResetStatus({ message: "❌ Δεν βρέθηκε token!", error: true });
+      return;
+    }
+
+    console.log("🛠 Στέλνουμε request στο API...");
+    const response = await axios.post(`${ADMIN_ROUTE}/addpasses`, {}, {
+      headers: { "x-observatory-auth": token },
+    });
+
+    console.log("✅ Reset Passes επιτυχές:", response.data);
+    setResetStatus({
+      message: "✅ Η προσθήκη των διελεύσεων ολοκληρώθηκε!",
+      data: response.data,
+      error: false,
+    });
+
+  } catch (error) {
+    console.error("❌ Add Passes request απέτυχε:", error);
+    setResetStatus({
+      message: `❌ Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
+      error: true,
+    });
+  }
+};
 
   return (
     <div style={styles.container}>
@@ -48,17 +150,21 @@ const Settings = () => {
         <button style={styles.button} onClick={handleHealthcheck}>
           📡 Healthcheck
         </button>
-        <button style={styles.button}>🛠️ Reset Stations</button>
-        <button style={styles.button}>🔄 Reset Passes</button>
-        <button style={styles.button}>➕ Add Passes</button>
+        <button style={styles.button} onClick={handleResetStations}>
+          🛠️ Reset Stations
+        </button>
+        <button style={styles.button} onClick={handleResetPasses}>
+          🔄 Reset Passes
+        </button>
+        <button style={styles.button} onClick={handleAddPasses}>
+          ➕ Add Passes
+        </button>
       </div>
 
-      {/* Εμφάνιση μηνύματος */}
+      {/* Εμφάνιση Μηνυμάτων Healthcheck */}
       {healthStatus && (
         <div style={healthStatus.error ? styles.errorMessage : styles.successMessage}>
           {healthStatus.message}
-
-          {/* Κουμπί Περισσότερα (Εμφάνιση/Απόκρυψη λεπτομερειών) */}
           {!healthStatus.error && healthStatus.data && (
             <>
               <button 
@@ -75,6 +181,13 @@ const Settings = () => {
               )}
             </>
           )}
+        </div>
+      )}
+
+      {/* Εμφάνιση Μηνυμάτων Reset Stations */}
+      {resetStatus && (
+        <div style={resetStatus.error ? styles.errorMessage : styles.successMessage}>
+          {resetStatus.message}
         </div>
       )}
     </div>
@@ -134,10 +247,10 @@ const styles = {
     padding: "5px 15px", 
     backgroundColor: "#28a745", 
     color: "white",
-    border: "2px",
+    border: "none",
     cursor: "pointer",
     borderRadius: "5px",
-    fontSize: "10px",
+    fontSize: "12px",
     fontWeight: "bold",
     transition: "background 0.3s ease",
   },
@@ -151,6 +264,5 @@ const styles = {
     overflowX: "auto",
   },
 };
-
 
 export default Settings;
