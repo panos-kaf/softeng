@@ -22,6 +22,7 @@ CREATE TABLE operators (
 CREATE TABLE toll_stations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     toll_id VARCHAR(10) UNIQUE, -- Add unique constraint to TollID
+    name VARCHAR(255),
     road VARCHAR(255),
     locality VARCHAR(255),
     lat DECIMAL(7, 5),
