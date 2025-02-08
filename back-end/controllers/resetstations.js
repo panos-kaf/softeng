@@ -28,9 +28,17 @@ exports.resetStations = async (req, res, next) => {
               return acc;
           }, []); 
 
-          const operators = uniqueOps.map(row => [row.OpID, row.Email, row.Operator]);
-          const opInsert = `INSERT INTO operators (op_id, email, name) VALUES ?`;
-          await connection.query(opInsert, [operators]);
+          const operators = uniqueOps.map(row => [row.OpID, row.Email, row.Operator, row.Operator]); // username is row.Operator
+
+          const opInsert = `
+              INSERT INTO operators (op_id, email, name, user_id)
+              VALUES ${operators.map(() => "(?, ?, ?, (SELECT id FROM users WHERE username = ?))").join(", ")}
+          `;
+
+          const values = operators.flat(); // Flatten the array to match query placeholders
+
+          await connection.query(opInsert, values);
+
 
           // Insert new data from the CSV
           for (const row of results) {
