@@ -1,3 +1,6 @@
+CREATE DATABASE softeng;
+USE softeng;
+
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -9,9 +12,11 @@ CREATE TABLE users (
 
 CREATE TABLE operators (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    op_id VARCHAR(4) NOT NULL UNIQUE, 
+    name VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255),
-    op_id VARCHAR(4) UNIQUE 
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE toll_stations (
