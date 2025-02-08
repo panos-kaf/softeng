@@ -27,4 +27,12 @@ async function createUser(username, password, role = 'user') {
 }
 
 // Call the function to create the user
-createUser('user', 'user', 'user');
+createUser('admin', 'admin', 'admin');
+createUser('aegeanmotorway', 'aegeanmotorway', 'user');
+createUser('egnatia', 'egnatia', 'user');
+createUser('gefyra', 'gefyra', 'user');
+createUser('kentrikiodos', 'kentrikiodos', 'user');
+createUser('moreas', 'moreas', 'user');
+createUser('naodos', 'naodos', 'user');
+createUser('neaodos', 'neaodos', 'user');
+createUser('olympiaodos', 'olympiaodos', 'user');
