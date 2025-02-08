@@ -8,6 +8,8 @@ const passAnalysisRouter = require('./passAnalysis');
 const passesCostRouter = require('./passesCost');
 const chargesByRouter = require('./chargesBy');
 const paymentsRouter = require('./payments');
+const tollStationsRouter = require('./tollstations');
+
 
 router.use('/admin', adminAuth, adminRouter);
 router.use('/tollStationPasses', tollStationPassesRouter);
@@ -15,6 +17,8 @@ router.use('/passAnalysis', passAnalysisRouter);
 router.use('/passesCost', passesCostRouter);
 router.use('/chargesBy', chargesByRouter);
 router.use('/payments', paymentsRouter);
+router.use('/tollstations', tollStationsRouter);
+
 
 router.all('*', (req, res)=>
     res.status(404).json({ error: "Invalid endpoint."})
