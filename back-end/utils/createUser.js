@@ -27,4 +27,4 @@ async function createUser(username, password, role = 'user') {
 }
 
 // Call the function to create the user
-createUser('user', 'user', 'user');
+createUser('admin', 'admin', 'admin');

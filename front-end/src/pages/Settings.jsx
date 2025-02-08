@@ -213,8 +213,8 @@ const styles = {
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "flex-start",
-    height: "100vh",
-    width: "100vw",
+    height: "50vh",
+    width: "50vw",
     padding: "20px",
   },
   
