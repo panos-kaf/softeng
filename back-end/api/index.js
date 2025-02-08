@@ -8,7 +8,7 @@ const passAnalysisRouter = require('./passAnalysis');
 const passesCostRouter = require('./passesCost');
 const chargesByRouter = require('./chargesBy');
 const paymentsRouter = require('./payments');
-const tollStationsRouter = require('./tollstations');
+const tollStationsRouter = require('./tollStations');
 
 
 router.use('/admin', adminAuth, adminRouter);
@@ -17,7 +17,7 @@ router.use('/passAnalysis', passAnalysisRouter);
 router.use('/passesCost', passesCostRouter);
 router.use('/chargesBy', chargesByRouter);
 router.use('/payments', paymentsRouter);
-router.use('/tollstations', tollStationsRouter);
+router.use('/tollStations', tollStationsRouter);
 
 
 router.all('*', (req, res)=>

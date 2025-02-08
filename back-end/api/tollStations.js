@@ -1,10 +1,10 @@
 const express = require("express");
 const authenticate = require("../middleware/auth"); // Προστασία με JWT token
-const tollStations = require("../controllers/tollstations");
+const { getTollStations } = require("../controllers/tollStations");
 
 const router = express.Router();
 
 // Endpoint: GET /api/tollStations
-router.get("/", authenticate, tollstations.getTollStations);
+router.get("/", authenticate, getTollStations);
 
 module.exports = router;
