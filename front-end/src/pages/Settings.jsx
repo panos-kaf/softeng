@@ -10,6 +10,7 @@ const Settings = () => {
   const [resetStatus, setResetStatus] = useState(null); 
   const [showDetails, setShowDetails] = useState(false); 
   const [resetPasses, setResetPassesStatus] = useState(null);
+  const [addPasses, setAddPassesStatus] = useState(null);
 
   /** 📡 Healthcheck */
   const handleHealthcheck = async () => {
@@ -85,7 +86,7 @@ const handleResetPasses = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("❌ No token found in localStorage!");
-      setResetStatus({ message: "❌ Δεν βρέθηκε token!", error: true });
+      setResetPassesStatus({ message: "❌ Δεν βρέθηκε token!", error: true });
       return;
     }
 
@@ -95,7 +96,7 @@ const handleResetPasses = async () => {
     });
 
     console.log("✅ Reset Passes επιτυχές:", response.data);
-    setResetStatus({
+    setResetPassesStatus({
       message: "✅ Επαναφορά των διελεύσεων ολοκληρώθηκε!",
       data: response.data,
       error: false,
@@ -103,7 +104,7 @@ const handleResetPasses = async () => {
 
   } catch (error) {
     console.error("❌ Reset Passes request απέτυχε:", error);
-    setResetStatus({
+    setResetPassesStatus({
       message: `❌ Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
       error: true,
     });
@@ -118,7 +119,7 @@ const handleAddPasses = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("❌ No token found in localStorage!");
-      setResetStatus({ message: "❌ Δεν βρέθηκε token!", error: true });
+      setAddPassesStatus({ message: "❌ Δεν βρέθηκε token!", error: true });
       return;
     }
 
@@ -128,7 +129,7 @@ const handleAddPasses = async () => {
     });
 
     console.log("✅ Reset Passes επιτυχές:", response.data);
-    setResetStatus({
+    setAddPassesStatus({
       message: "✅ Η προσθήκη των διελεύσεων ολοκληρώθηκε!",
       data: response.data,
       error: false,
@@ -136,7 +137,7 @@ const handleAddPasses = async () => {
 
   } catch (error) {
     console.error("❌ Add Passes request απέτυχε:", error);
-    setResetStatus({
+    setAddPassesStatus({
       message: `❌ Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
       error: true,
     });
@@ -145,7 +146,7 @@ const handleAddPasses = async () => {
 
   return (
     <div style={styles.container}>
-      <h2>Ρυθμίσεις</h2>
+      <h2>Διαχείριση</h2>
       <div style={styles.buttonContainer}>
         <button style={styles.button} onClick={handleHealthcheck}>
           📡 Healthcheck
@@ -188,6 +189,18 @@ const handleAddPasses = async () => {
       {resetStatus && (
         <div style={resetStatus.error ? styles.errorMessage : styles.successMessage}>
           {resetStatus.message}
+        </div>
+      )}
+      {/* Εμφάνιση Μηνυμάτων Reset Passes */}
+      {resetPasses && (
+        <div style={resetPasses.error ? styles.errorMessage : styles.successMessage}>
+          {resetPasses.message}
+        </div>
+      )}
+      {/* Εμφάνιση Μηνυμάτων Add Passes */}
+      {addPasses && (
+        <div style={addPasses.error ? styles.errorMessage : styles.successMessage}>
+          {addPasses.message}
         </div>
       )}
     </div>

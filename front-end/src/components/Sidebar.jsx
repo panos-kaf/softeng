@@ -3,12 +3,12 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const role = localStorage.getItem("role"); // Παίρνουμε το role από το Local Storage
+  const role = localStorage.getItem("role"); 
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Διαγραφή του token
-    localStorage.removeItem("role");  // Διαγραφή του role
-    navigate("/login"); // Ανακατεύθυνση στη σελίδα login
+    localStorage.removeItem("token"); 
+    localStorage.removeItem("role");  
+    navigate("/login"); 
   };
 
   return (
@@ -24,9 +24,11 @@ const Sidebar = () => {
         <li>
           <NavLink to={`/${role}/payments`} style={getLinkStyle}>💳 Πληρωμές</NavLink>
         </li>
-        <li>
-          <NavLink to={`/${role}/settings`} style={getLinkStyle}>⚙️ Ρυθμίσεις</NavLink>
-        </li>
+        {role === "admin" && (
+          <li>
+            <NavLink to={`/${role}/settings`} style={getLinkStyle}>⚙️ Διαχείριση</NavLink>
+          </li>
+        )}
       </ul>
 
       {/* Logout Button */}
