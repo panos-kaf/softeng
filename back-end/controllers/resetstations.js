@@ -45,12 +45,13 @@ exports.resetStations = async (req, res, next) => {
             await connection.query(
               `
               INSERT INTO toll_stations 
-              (road, locality, lat, lon, price1, price2, price3, price4, toll_id, operator_id, email)
+              (road, locality, name, lat, lon, price1, price2, price3, price4, toll_id, operator_id, email)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `,
               [
                 row.Road,
                 row.Locality,
+                row.name,
                 parseFloat(row.Lat),
                 parseFloat(row.Long),
                 parseFloat(row.Price1),
