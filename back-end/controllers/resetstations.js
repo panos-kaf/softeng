@@ -46,7 +46,7 @@ exports.resetStations = async (req, res, next) => {
               `
               INSERT INTO toll_stations 
               (road, locality, name, lat, lon, price1, price2, price3, price4, toll_id, operator_id, email)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `,
               [
                 row.Road,
