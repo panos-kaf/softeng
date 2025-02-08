@@ -2,7 +2,7 @@ const db = require("../utils/db");
 
 exports.getTollStations = async (req, res) => {
     try {
-        const operator_name = req.user.operator_name; // Παίρνουμε το ID του operator από το token
+        const operator_name = req.body.operator_name; // Παίρνουμε το ID του operator από το token
 
         if (!operator_name) {
             return res.status(403).json({ message: "Δεν έχετε πρόσβαση σε σταθμούς" });

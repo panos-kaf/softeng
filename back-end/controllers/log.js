@@ -43,7 +43,7 @@ exports.in = async (req, res) => {
             { expiresIn: '12h' } // Token expires in 1 hour
         );
 
-        res.status(200).json({ token, role: user.role, operator_name:user.username }); // Κρατάμε και τον ρόλο για τα end points στο front end
+        res.status(200).json({ token, role: user.role, operator_name: user.username }); // Κρατάμε και τον ρόλο για τα end points στο front end
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Internal server error' });
