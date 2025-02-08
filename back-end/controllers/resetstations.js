@@ -51,7 +51,7 @@ exports.resetStations = async (req, res, next) => {
               [
                 row.Road,
                 row.Locality,
-                row.name,
+                row.Name,
                 parseFloat(row.Lat),
                 parseFloat(row.Long),
                 parseFloat(row.Price1),
