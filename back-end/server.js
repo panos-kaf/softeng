@@ -13,14 +13,14 @@ const options = {
     cert: fs.readFileSync(process.env.SSL_CERT)
 }
 
-https.createServer(options, app).listen(HTTPS_PORT, () => {
-    console.log(`Server is running on https://localhost:${HTTPS_PORT}`);
-})
+https.createServer(options, app).listen(HTTPS_PORT, '0.0.0.0', () => {
+    console.log(`Server is running on https://192.168.1.128:${HTTPS_PORT}`);
+});
 
 http.createServer((req, res) => {
     console.log(`Redirecting HTTP request: ${req.url}`);
     res.writeHead(301, { "Location": `https://${HOST}:${HTTPS_PORT}${req.url}` });
     res.end();
-}).listen(HTTP_PORT, () => {
+}).listen(HTTP_PORT, '0.0.0.0', () => {
     console.log(`HTTP to HTTPS Redirect Server running on http://${HOST}:${HTTP_PORT}`);
 });

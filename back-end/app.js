@@ -6,13 +6,16 @@ const authenticate = require('./middleware/auth');
 const loginRouter = require('./api/log');
 const apiRouter = require('./api/index');
 
+const FRONT_PORT = process.env.FRONTEND_PORT;
+const LOCALHOST_ORIGIN = `https://localhost:${FRONT_PORT}`;
+const LAN_ORIGIN = `https://192.168.1.128:${FRONT_PORT}`;
+
 const app = express();
 
 require('./cron/scheduleJobs');
 
-//Εγινε Αλλαγή στο παρακάτω
 app.use(cors({
-    origin: "https://localhost:"+process.env.FRONTEND_PORT, // Επιτρέπει requests από το Frontend
+    origin: [LOCALHOST_ORIGIN, LAN_ORIGIN], // Επιτρέπει requests από το Frontend
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));

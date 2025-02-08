@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios"; 
 
-const ROUTE = `https://localhost:9115`; 
-const API_ROUTE = `${ROUTE}/api`;
-const ADMIN_ROUTE = `${API_ROUTE}/admin`;
+const API_URL = `${import.meta.env.VITE_API_URL}/api`;
+const ADMIN_URL = `${API_URL}/admin`;
 
 const Settings = () => {
   const [healthStatus, setHealthStatus] = useState(null); 
@@ -25,7 +24,7 @@ const Settings = () => {
       }
 
       console.log("📡 Στέλνουμε request στο API...");
-      const response = await axios.get(`${ADMIN_ROUTE}/healthcheck`, {
+      const response = await axios.get(`${ADMIN_URL}/healthcheck`, {
         headers: { "x-observatory-auth": token }, 
       });
 
@@ -58,7 +57,7 @@ const Settings = () => {
       }
 
       console.log("🛠 Στέλνουμε request στο API...");
-      const response = await axios.post(`${ADMIN_ROUTE}/resetstations`, {}, {
+      const response = await axios.post(`${ADMIN_URL}/resetstations`, {}, {
         headers: { "x-observatory-auth": token },
       });
 
@@ -91,7 +90,7 @@ const handleResetPasses = async () => {
     }
 
     console.log("🛠 Στέλνουμε request στο API...");
-    const response = await axios.post(`${ADMIN_ROUTE}/resetpasses`, {}, {
+    const response = await axios.post(`${ADMIN_URL}/resetpasses`, {}, {
       headers: { "x-observatory-auth": token },
     });
 
@@ -124,7 +123,7 @@ const handleAddPasses = async () => {
     }
 
     console.log("🛠 Στέλνουμε request στο API...");
-    const response = await axios.post(`${ADMIN_ROUTE}/addpasses`, {}, {
+    const response = await axios.post(`${ADMIN_URL}/addpasses`, {}, {
       headers: { "x-observatory-auth": token },
     });
 
