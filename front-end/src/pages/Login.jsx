@@ -24,7 +24,7 @@ const Login = () => {
       console.log("API Response:", response.data);
 
       // Πάρε το token και το role από το API response
-      const { token, role } = response.data;
+      const { token, role, operator_name } = response.data;
 
       if (!token || !role) {
         console.error("Το API δεν επέστρεψε σωστά το token ή το role!");
@@ -35,9 +35,9 @@ const Login = () => {
       // Αποθήκευση στο Local Storage
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
-      localStorage.setItem("operator_id", response.data.operator_id);
+      localStorage.setItem("operator_name", operator_name);
 
-      console.log("Operator ID από localStorage:", localStorage.getItem("operator_id"));
+      console.log("Operator name:", operator_name);
 
 
       console.log("Token αποθηκεύτηκε:", token);
