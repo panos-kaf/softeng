@@ -8,15 +8,15 @@ const apiRouter = require('./api/index');
 
 const HOST_IP = process.env.HOST_IP;
 const FRONT_PORT = process.env.FRONTEND_PORT;
-const LOCALHOST_ORIGIN = `https://localhost:${FRONT_PORT}`;
 const LAN_ORIGIN = `https://${HOST_IP}:${FRONT_PORT}`;
+const LOCALHOST_ORIGIN = `https://localhost:${FRONT_PORT}`;
 
 const app = express();
 
 require('./cron/scheduleJobs');
 
 app.use(cors({
-    origin: [LAN_ORIGIN, LOCALHOST_ORIGIN],
+    origin: LAN_ORIGIN,
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));
