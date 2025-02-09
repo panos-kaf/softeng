@@ -15,8 +15,14 @@ const processPayments = async (req, res) => {
             const [operators] = await db.execute(opQuery);
 
             for (operator of operators){
-                const response = await axios.get(`${URL}/passesCost///`);
-                //response.data.forEach(debt )
+                const response = await axios.get(`${URL}/passesCost/${toll_op}/${tag_op}/${date_from}/${date_to}`);
+                response.data.forEach(debt => {
+                    totalDebts.push({
+                        debtor_op: debt.tagOpID,
+                        creditor_op: opID,
+                        cost: debt.passesCost
+                    })
+                })
             }
 
             console.log(operators);
