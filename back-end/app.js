@@ -16,12 +16,7 @@ const app = express();
 require('./cron/scheduleJobs');
 
 app.use(cors({
-<<<<<<< HEAD
     origin: LAN_ORIGIN,
-=======
-    origin: [LAN_ORIGIN, LOCALHOST_ORIGIN, `https://${LAN_HOSTNAME}:${FRONT_PORT}`],
-    //origin: "https://192.168.2.5:9000", // Αυτο το εχω βαλει για να μην το προσθέτω κάθε φορά που κάνω pull
->>>>>>> 7ac620b3462fe9f23e2570510bbd5932a2c5fb62
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));
