@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require('dotenv').config({ path: '../back-end/.env' });
+require('dotenv').config({ path: '../.env' });
 const { Command } = require('commander');
 const axios = require('axios').default;
 const fs = require('fs');
