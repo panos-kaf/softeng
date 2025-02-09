@@ -4,14 +4,14 @@ import fs from 'fs'
 
 import dotenv from 'dotenv'
 
-dotenv.config()
+dotenv.config({ path: '../.env'})
 
 export default defineConfig({
   plugins: [react()],
   server: {
     https: {
-      key: fs.readFileSync('../back-end/cert/localhost-key.pem'),
-      cert: fs.readFileSync('../back-end/cert/localhost-cert.pem'),
+      key: fs.readFileSync('../back-end/cert/selfsigned.key'),
+      cert: fs.readFileSync('../back-end/cert/selfsigned.crt'),
     },
     host: process.env.VITE_HOST_IP,
     port: process.env.VITE_PORT

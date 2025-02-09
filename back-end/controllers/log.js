@@ -7,6 +7,7 @@ exports.getAll = async (req, res) => {
 };
 
 exports.in = async (req, res) => {
+    console.log('test123');
     const { username, password } = req.body;
     
     if (!username || !password) {
@@ -42,6 +43,13 @@ exports.in = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: '12h' } // Token expires in 1 hour
         );
+
+        res.cookie('token', token, {
+            httpOnly: true,  // Prevents client-side access to the cookie
+            secure: true,    // Ensures cookie is only sent over HTTPS
+            sameSite: 'None', // Allows cross-origin requests with credentials
+            maxAge: 12 * 60 * 60 * 1000,  // Cookie expiration (12 hours)
+        });
 
         res.status(200).json({ token, role: user.role, operator_name: user.username}); // Κρατάμε και τον ρόλο για τα end points στο front end
     } catch (err) {

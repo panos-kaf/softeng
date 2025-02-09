@@ -8,7 +8,7 @@ const path = require('path');
 const db = require('../back-end/utils/db');
 
 const PORT = process.env.HTTPS_PORT;
-const HOST = process.env.APP_HOST;
+const HOST = process.env.HOST_IP;
 const ROUTE = `https://${HOST}:${PORT}/api`;
 const ADMIN_ROUTE = `${ROUTE}/admin`;
 
