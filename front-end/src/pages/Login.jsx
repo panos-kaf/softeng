@@ -35,6 +35,10 @@ const Login = () => {
       // Αποθήκευση στο Local Storage
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
+      localStorage.setItem("operator_id", response.data.operator_id);
+
+      console.log("Operator ID από localStorage:", localStorage.getItem("operator_id"));
+
 
       console.log("Token αποθηκεύτηκε:", token);
       console.log("Role αποθηκεύτηκε:", role);
