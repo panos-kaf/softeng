@@ -13,6 +13,14 @@ const Passes = () => {
     const fetchTollStations = async () => {
       try {
         const token = localStorage.getItem("token");
+        const operator_name = localStorage.getItem("operator_name"); // Παίρνουμε το όνομα του operator
+        console.log("🔍 Operator Name από LocalStorage:", operator_name);
+        
+        if (!token || !operator_name) {
+          console.error("❌ Δεν βρέθηκε token ή operator_name!");
+          return;
+        }
+
         const response = await axios.get(`${API_URL}/tollstations`, {
           headers: { "x-observatory-auth": token }
         });
@@ -24,7 +32,8 @@ const Passes = () => {
     };
 
     fetchTollStations();
-  }, []);
+}, []);
+
 
   const handleSearch = () => {
     console.log("📡 Σταθμός:", selectedStation);
@@ -80,14 +89,52 @@ const Passes = () => {
 };
 
 const styles = {
-  container: { padding: "20px", maxWidth: "900px", margin: "auto" },
-  title: { textAlign: "left", marginBottom: "20px" },
-  filtersWrapper: { display: "flex", flexDirection: "column", alignItems: "center" },
-  filterContainer: { display: "flex", justifyContent: "center", gap: "20px", alignItems: "center", flexWrap: "wrap" },
-  filterItem: { display: "flex", flexDirection: "column", alignItems: "center" },
-  select: { padding: "8px", fontSize: "16px", width: "180px" },
-  input: { padding: "8px", fontSize: "16px", width: "150px" },
-  button: { marginTop: "20px", padding: "10px 20px", fontSize: "16px", backgroundColor: "#3a506b", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" },
+  container: { 
+    padding: "20px",
+    maxWidth: "900px",
+    margin: "auto"
+  },
+  title: { 
+    textAlign: "left", 
+    marginBottom: "20px" 
+  },
+  filtersWrapper: { 
+    display: "flex", 
+    flexDirection: "column", 
+    alignItems: "center" 
+  },
+  filterContainer: { 
+    display: "flex", 
+    justifyContent: "center", 
+    gap: "20px", 
+    alignItems: "center", 
+    flexWrap: "wrap" 
+  },
+  filterItem: { 
+    display: "flex", 
+    flexDirection: "column", 
+    alignItems: "center" 
+  },
+  select: { 
+    padding: "8px", 
+    fontSize: "16px", 
+    width: "180px" 
+  },
+  input: { 
+    padding: "8px", 
+    fontSize: "16px", 
+    width: "150px" 
+  },
+  button: { 
+    marginTop: "20px", 
+    padding: "10px 20px", 
+    fontSize: "16px",
+    backgroundColor: "#3a506b", 
+    color: "white", 
+    border: "none", 
+    cursor: "pointer", 
+    borderRadius: "5px" 
+  },
 };
 
 export default Passes;
