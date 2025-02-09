@@ -9,6 +9,7 @@ const passesCostRouter = require('./passesCost');
 const chargesByRouter = require('./chargesBy');
 const paymentsRouter = require('./payments');
 const tollStationsRouter = require('./tollStations');
+const operatorsRouter = require('./operators');
 
 
 router.use('/admin', adminAuth, adminRouter);
@@ -18,6 +19,8 @@ router.use('/passesCost', passesCostRouter);
 router.use('/chargesBy', chargesByRouter);
 router.use('/payments', paymentsRouter);
 router.use('/tollStations', tollStationsRouter);
+router.use('/operators', operatorsRouter);
+
 
 
 router.all('*', (req, res)=>
