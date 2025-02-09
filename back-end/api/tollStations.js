@@ -6,5 +6,7 @@ const router = express.Router();
 
 // Endpoint: GET /api/tollStations
 router.get("/", authenticate, tollStationsController.getTollStations);
+router.post("/", authenticate, tollStationsController.getTollStations);
+
 
 module.exports = router;

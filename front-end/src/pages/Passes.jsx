@@ -11,29 +11,36 @@ const Passes = () => {
 
   useEffect(() => {
     const fetchTollStations = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const operator_name = localStorage.getItem("operator_name"); // Παίρνουμε το όνομα του operator
-        console.log("🔍 Operator Name από LocalStorage:", operator_name);
-        
-        if (!token || !operator_name) {
-          console.error("❌ Δεν βρέθηκε token ή operator_name!");
-          return;
+        try {
+            const token = localStorage.getItem("token");
+            const operator_name = localStorage.getItem("operator_name"); 
+    
+            console.log("🔍 Operator Name από LocalStorage:", operator_name);
+    
+            if (!token || !operator_name) {
+                console.error("❌ Δεν βρέθηκε token ή operator_name!");
+                return;
+            }
+    
+            // Στέλνουμε το `operator_name` στο body (αντί για query params)
+            const response = await axios.post(`${API_URL}/tollstations`, 
+                { operator_name }, // Σωστή αποστολή στο body
+                {
+                    headers: { "x-observatory-auth": token }
+                }
+            );
+    
+            console.log("✅ Λίστα σταθμών από το API:", response.data);
+            setTollStations(response.data);
+        } catch (error) {
+            console.error("❌ Σφάλμα κατά τη λήψη των σταθμών:", error.response ? error.response.data : error);
         }
-
-        const response = await axios.get(`${API_URL}/tollstations`, {
-          headers: { "x-observatory-auth": token }
-        });
-
-        setTollStations(response.data);
-      } catch (error) {
-        console.error("❌ Error fetching toll stations:", error);
-      }
     };
+    
+    
 
     fetchTollStations();
-}, []);
-
+  }, []);
 
   const handleSearch = () => {
     console.log("📡 Σταθμός:", selectedStation);
