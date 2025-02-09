@@ -1,8 +1,7 @@
 const axios = require('../utils/axiosInstance');
 const {getToken} = require('../utils/token');
+const {ADMIN_ROUTE} = require('../utils/routes');
 
-const HOST = process.env.HOST_IP;
-const PORT = process.env.HTTPS_PORT;
 
 module.exports = (program) => {
     program

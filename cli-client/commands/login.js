@@ -1,9 +1,7 @@
 const axios = require('../utils/axiosInstance');
 const fs = require('fs');
 const {TOKEN_PATH} = require('../utils/token');
-
-const HOST = process.env.HOST_IP;
-const PORT = process.env.HTTPS_PORT;
+const {ROUTE} = require('../utils/routes');
 
 module.exports = (program) => {
   program
@@ -14,7 +12,7 @@ module.exports = (program) => {
     .action(async (options) => {
       try {
         const { username, password } = options;
-        const response = await axios.post(`https://${HOST}:${PORT}/login`, {
+        const response = await axios.post(`${ROUTE}/login`, {
           username,
           password
         });

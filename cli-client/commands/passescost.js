@@ -1,8 +1,7 @@
 const axios = require('../utils/axiosInstance');
 const {getToken} = require('../utils/token');
+const {API_ROUTE} = require('../utils/routes');
 
-const HOST = process.env.HOST_IP;
-const PORT = process.env.HTTPS_PORT;
 
 module.exports = (program) => {
     program
@@ -34,7 +33,7 @@ module.exports = (program) => {
   
         const format = 'csv';
         // Send format as a query parameter
-        const response = await axios.get(`${ROUTE}/passesCost`, {
+        const response = await axios.get(`${API_ROUTE}/passesCost`, {
           params: { station, from, to, format },
           headers: { 'x-observatory-auth': token } //  Send token in the request
         });
