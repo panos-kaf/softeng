@@ -11,7 +11,7 @@ const Settings = () => {
   const [resetPasses, setResetPassesStatus] = useState(null);
   const [addPasses, setAddPassesStatus] = useState(null);
 
-  /** 📡 Healthcheck */
+  /* 📡 Healthcheck */
   const handleHealthcheck = async () => {
     try {
       console.log("📡 Healthcheck request ξεκίνησε...");
