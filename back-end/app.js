@@ -17,6 +17,7 @@ require('./cron/scheduleJobs');
 
 app.use(cors({
     origin: [LAN_ORIGIN, LOCALHOST_ORIGIN, `https://${LAN_HOSTNAME}:${FRONT_PORT}`],
+    //origin: "https://192.168.2.5:9000", // Αυτο το εχω βαλει για να μην το προσθέτω κάθε φορά που κάνω pull
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));
