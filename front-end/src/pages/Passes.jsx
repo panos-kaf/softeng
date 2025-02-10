@@ -4,25 +4,57 @@ import axios from "axios";
 const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 const Passes = () => {
+  const role = localStorage.getItem("role") || "";
+  const [selectedOperator, setSelectedOperator] = useState("");
   const [selectedStation, setSelectedStation] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [operators, setOperators] = useState([]);
   const [tollStations, setTollStations] = useState([]);
   const [passes, setPasses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searched, setSearched] = useState(false); // Flag για το αν έχει γίνει αναζήτηση
+  const [searched, setSearched] = useState(false);
+
+  useEffect(() => {
+    // Αν είμαστε admin, φορτώνουμε τους operators
+    if (role === "admin") {
+      const fetchOperators = async () => {
+        try {
+          const token = localStorage.getItem("token");
+
+          const response = await axios.get(`${API_URL}/operators`, {
+            headers: { "x-observatory-auth": token }
+          });
+
+          setOperators(response.data);
+        } catch (error) {
+          console.error("❌ Σφάλμα κατά τη λήψη των operators:", error);
+        }
+      };
+
+      fetchOperators();
+    }
+  }, [role]);
 
   useEffect(() => {
     const fetchTollStations = async () => {
       try {
         const token = localStorage.getItem("token");
-        const operator_name = localStorage.getItem("operator_name");
+        
+        let operator_name;
+        if (role === "admin") {
+          operator_name = selectedOperator; // O admin επιλέγει operator
+        } else {
+          operator_name = localStorage.getItem("operator_name"); // User βλέπει μόνο τους δικούς του σταθμούς
+        }
 
         if (!token || !operator_name) {
           console.error("❌ Δεν βρέθηκε token ή operator_name!");
           return;
         }
+
+        console.log("📡 Φόρτωση σταθμών για:", operator_name);
 
         const response = await axios.post(
           `${API_URL}/tollstations`,
@@ -30,22 +62,19 @@ const Passes = () => {
           { headers: { "x-observatory-auth": token } }
         );
 
-        console.log("📋 Σταθμοί που επιστράφηκαν:", response.data);
-
         setTollStations(response.data);
       } catch (error) {
-        console.error("❌ Σφάλμα κατά τη λήψη των σταθμών:", error.response ? error.response.data : error);
+        console.error("❌ Σφάλμα κατά τη λήψη των σταθμών:", error);
       }
-
     };
 
-    fetchTollStations();
-  }, []);
+    // Αν είμαστε admin, περιμένουμε πρώτα να επιλεγεί ένας operator
+    if (role !== "admin" || (role === "admin" && selectedOperator)) {
+      fetchTollStations();
+    }
+  }, [role, selectedOperator]);
 
   const handleSearch = async () => {
-    console.log("🔍 API Request URL:", `${API_URL}/passanalysis/${selectedStation}/someTagOpID/${fromDate}/${toDate}`);
-    console.log("📡 Σταθμός:", selectedStation);
-
     if (!selectedStation || !fromDate || !toDate) {
       setError("Παρακαλώ επιλέξτε σταθμό και ημερομηνίες!");
       return;
@@ -53,14 +82,10 @@ const Passes = () => {
 
     setLoading(true);
     setError("");
-    setSearched(true); // Ενεργοποιούμε το flag ότι έγινε αναζήτηση
+    setSearched(true);
 
-    // Μετατροπή των ημερομηνιών από YYYY-MM-DD σε YYYYMMDD
     const formattedFromDate = fromDate.replace(/-/g, "");
     const formattedToDate = toDate.replace(/-/g, "");
-
-    console.log("📅 Από:", formattedFromDate);
-    console.log("📅 Μέχρι:", formattedToDate);
 
     try {
       const token = localStorage.getItem("token");
@@ -69,8 +94,6 @@ const Passes = () => {
         `${API_URL}/tollStationPasses/${selectedStation}/${formattedFromDate}/${formattedToDate}`,
         { headers: { "x-observatory-auth": token } }
       );
-
-      console.log("✅ API Response:", response.data);
 
       if (response.status === 204) {
         setPasses([]);
@@ -88,58 +111,81 @@ const Passes = () => {
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>🚗 Διελεύσεις Οχημάτων</h2>
+
       <div style={styles.filtersWrapper}>
         <div style={styles.filterContainer}>
-          <div style={styles.filterItem}>
-            <label>Επιλέξτε Σταθμό:</label>
+          {role === "admin" && (
+            <div style={styles.filterItem}>
+            <label>Επιλέξτε Operator:</label>
             <select
-              value={selectedStation}
-              onChange={(e) => setSelectedStation(e.target.value)}
+              value={selectedOperator}
+              onChange={(e) => setSelectedOperator(e.target.value)}
               style={styles.select}
             >
-              <option value="">Όλοι οι σταθμοί</option>
-              {tollStations.map((station) => (
-                <option key={station.id} value={station.toll_id}>
-                  {station.road} - {station.locality}
-                </option>
-              ))}
+            <option value="">-- Επιλέξτε Operator --</option>
+            {operators.map((op) => (
+              <option key={op.id} value={op.name}>
+                {op.name}
+              </option>
+            ))}
             </select>
           </div>
-          <div style={styles.filterItem}>
-            <label>Από:</label>
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-          <div style={styles.filterItem}>
-            <label>Μέχρι:</label>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-        </div>
-        <button onClick={handleSearch} style={styles.button}>
-          🔎 Αναζήτηση
-        </button>
-      </div>
-      
+        )}
+
+    <div style={styles.filterItem}>
+      <label>Επιλέξτε Σταθμό:</label>
+      <select
+        value={selectedStation}
+        onChange={(e) => setSelectedStation(e.target.value)}
+        style={styles.select}
+        disabled={role === "admin" && !selectedOperator}
+      >
+        <option value="">Όλοι οι σταθμοί</option>
+        {tollStations.map((station) => (
+          <option key={station.id} value={station.toll_id}>
+            {station.road} - {station.locality}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div style={styles.filterItem}>
+      <label>Από:</label>
+      <input
+        type="date"
+        value={fromDate}
+        onChange={(e) => setFromDate(e.target.value)}
+        style={styles.input}
+      />
+    </div>
+    <div style={styles.filterItem}>
+      <label>Μέχρι:</label>
+      <input
+        type="date"
+        value={toDate}
+        onChange={(e) => setToDate(e.target.value)}
+        style={styles.input}
+      />
+    </div>
+  </div>
+  
+  <button onClick={handleSearch} style={styles.button} disabled={role === "admin" && !selectedOperator}>
+    🔎 Αναζήτηση
+  </button>
+</div>
+
       {searched && (
         <div style={styles.stationInfo}>
-          <p><strong>Σταθμός:</strong> {selectedStation}</p>
-  
+          <p>
+            <strong>Σταθμός:</strong> {selectedStation} <strong>({selectedOperator || localStorage.getItem("operator_name")})</strong>
+          </p>
         </div>
       )}
 
       {loading && <p>⏳ Φόρτωση...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {searched && ( // Μόνο αν έχει γίνει αναζήτηση θα εμφανίζεται ο πίνακας
+      {searched && (
         <table border="1" style={{ marginTop: "20px", width: "100%" }}>
           <thead>
             <tr>
@@ -161,7 +207,7 @@ const Passes = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5">Δεν βρέθηκαν δεδομένα</td>
+                <td colSpan="4">Δεν βρέθηκαν δεδομένα</td>
               </tr>
             )}
           </tbody>
@@ -171,52 +217,53 @@ const Passes = () => {
   );
 };
 
+
 const styles = {
-  container: { 
+  container: {
     padding: "20px",
-    maxWidth: "900px",
+    maxWidth: "900px", 
     margin: "auto"
   },
-  title: { 
-    textAlign: "left", 
-    marginBottom: "20px" 
+  title: {
+    textAlign: "left",
+    marginBottom: "20px"
   },
   filtersWrapper: { 
-    display: "flex", 
-    flexDirection: "column", 
-    alignItems: "center" 
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
   },
-  filterContainer: { 
-    display: "flex", 
-    justifyContent: "center", 
-    gap: "20px", 
-    alignItems: "center", 
-    flexWrap: "wrap" 
+  filterContainer: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "20px",
+    alignItems: "center",
+    flexWrap: "wrap"
   },
-  filterItem: { 
-    display: "flex", 
-    flexDirection: "column", 
-    alignItems: "center" 
+  filterItem: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
   },
-  select: { 
-    padding: "8px", 
-    fontSize: "16px", 
-    width: "180px" 
-  },
-  input: { 
-    padding: "8px", 
-    fontSize: "16px", 
-    width: "150px" 
-  },
-  button: { 
-    marginTop: "20px", 
-    padding: "10px 20px", 
+  select: {
+    padding: "8px",
     fontSize: "16px",
-    backgroundColor: "#3a506b", 
-    color: "white", 
-    border: "none", 
-    cursor: "pointer", 
-    borderRadius: "5px" 
+    width: "180px"
+  },
+  input: {
+    padding: "8px",
+    fontSize: "16px",
+    width: "150px"
+  },
+  button: {
+    marginTop: "20px",
+    padding: "10px 20px",
+    fontSize: "16px",
+    backgroundColor: "#3a506b",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+    borderRadius: "5px"
   },
 };
 
