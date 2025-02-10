@@ -3,7 +3,6 @@ const debtCalculatorController = require('../controllers/debtCalculator');
 
 const router = express.Router();
 
-router.get('/', debtCalculatorController.getAll);
 router.get('/:operatorID/:date_from/:date_to', debtCalculatorController.getDebt);
 
 router.all('*', (req, res)=>
