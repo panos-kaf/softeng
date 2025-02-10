@@ -44,8 +44,8 @@ const Payments = () => {
   }, [loggedInOperator]);
 
   const handleSearch = async () => {
-    if (!selectedOperator || !fromDate || !toDate) {
-      setError("Παρακαλώ επιλέξτε operator και ημερομηνίες!");
+    if (!selectedOperator || !selectedMonth) {
+      setError("Παρακαλώ επιλέξτε operator και μήνα!");
       return;
     }
 
@@ -58,11 +58,14 @@ const Payments = () => {
     // Μετατροπή του μήνα (YYYY-MM) σε μορφή χωρίς παύλες (YYYYMM)
     const formattedMonth = selectedMonth.replace(/-/g, "");
 
-    console.log("📡 Αναζήτηση χρέους προς operator:", selectedOperator);
-    console.log("📆 Μήνας πληρωμής:", formattedMonth);
+    const firstDay = `${formattedMonth}01`; // YYYYMM01
+    const lastDay = `${formattedMonth}${new Date(parseInt(formattedMonth.substring(0, 4)), parseInt(formattedMonth.substring(4, 6)), 0).getDate()}`; // YYYYMM(τελευταία μέρα του μήνα)
+
+    console.log(" Αναζήτηση χρέους προς operator:", selectedOperator);
+    console.log(" Περίοδος πληρωμής:", firstDay, "έως", lastDay);
 
     try {
-      const response = await axios.get(`${API_URL}/debtCalculator/${selectedOperator}/${formattedFromDate}/${formattedToDate}`, {
+      const response = await axios.get(`${API_URL}/debtCalculator/${selectedOperator}/${firstDay}/${lastDay}`, {
         headers: { "x-observatory-auth": token },
       });
 
@@ -92,8 +95,7 @@ const Payments = () => {
         {
           operatorID: selectedOperator,
           amount: debt,
-          dateFrom: fromDate.replace(/-/g, ""),
-          dateTo: toDate.replace(/-/g, ""),
+          monthYear: selectedMonth.replace(/-/g, "") + "01", // Αφαιρούμε τις παύλες πριν στείλουμε το μήνα
         },
         {
           headers: { "x-observatory-auth": token },
