@@ -7,7 +7,6 @@ exports.getAll = async (req, res) => {
 };
 
 exports.in = async (req, res) => {
-    console.log('test123');
     const { username, password } = req.body;
     
     if (!username || !password) {
