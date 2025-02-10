@@ -21,7 +21,7 @@ function parseTollData(jsonData) {
     return { tollOpID, debt };
 }
 
-async function calculateDailySettlements() {
+async function calculateSettlements(fromDate, toDate) {
     const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -34,7 +34,7 @@ async function calculateDailySettlements() {
     let debts = {};
     
     for (const operator of operators) {
-        const req = { params: { tollOpID: operator, date_from: '20101010', date_to: '20261010' } };
+        const req = { params: { tollOpID: operator, date_from: fromDate, date_to: toDate } };
     
         let responseData = null; // Explicitly initialize responseData
         const res = {
@@ -83,5 +83,4 @@ async function calculateDailySettlements() {
     return settlements;
 
 }
-
-calculateDailySettlements();
+calculateSettlements('20101010','20301010');
