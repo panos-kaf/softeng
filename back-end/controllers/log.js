@@ -19,7 +19,7 @@ exports.in = async (req, res) => {
         const user = rows[0];
 
         if (!user) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ message: 'User does not exist.' });
         }
         
         // ------------------------------------------------------
