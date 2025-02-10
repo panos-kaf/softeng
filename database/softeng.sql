@@ -56,16 +56,17 @@ CREATE TABLE transactions (
 
 CREATE TABLE settlements (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    op_id INT,
+    amount NUMERIC(10, 2) NOT NULL,
     date TIMESTAMP NOT NULL,
-    from_operator INT,
-    to_operator INT,
+    from_operator INT NOT NULL,
+    to_operator INT NOT NULL,
     CONSTRAINT fk_settlements_from_operator FOREIGN KEY (from_operator) REFERENCES operators(id),
     CONSTRAINT fk_settlements_to_operator FOREIGN KEY (to_operator) REFERENCES operators(id)
 );
 
 CREATE TABLE payments (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    date TIMESTAMP DEFAULT CURRENT TIMESTAMP,
     from_operator INT,
     to_operator INT,
     amount NUMERIC(10, 2),
