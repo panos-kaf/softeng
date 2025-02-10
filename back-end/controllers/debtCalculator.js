@@ -1,31 +1,25 @@
 const db = require('../utils/db');
+const { calculateSettlements } = require('../utils/calculateSettlements');
 
 exports.getDebt = async (req, res) => {
-    const { operatorID, date_from, date_to } = req.params;
+    const { month_year } = req.params;
 
     try {
-        // Μετατροπή ημερομηνιών αν χρειάζεται (π.χ., αν πρέπει να αφαιρεθούν οι παύλες)
-        const formattedFromDate = date_from.replace(/-/g, '');
-        const formattedToDate = date_to.replace(/-/g, '');
+        const year = parseInt(month_year.substring(0, 4), 10);
+        const month = parseInt(month_year.substring(4, 6), 10);
 
-        // SQL Query για να υπολογίσουμε το συνολικό χρέος προς τον συγκεκριμένο operator
-        const query = `
-            SELECT 
-                SUM(trans.charge) AS totalDebt
-            FROM transactions trans
-            JOIN toll_stations ts ON trans.toll_station_id = ts.id
-            JOIN operators op ON ts.operator_id = op.id
-            JOIN tags tg ON trans.tag_id = tg.id
-            WHERE tg.operator_id = ? 
-            AND trans.timestamp BETWEEN ? AND ?;
-        `;
+        if (isNaN(month))
+            return res.status(400).json({error:"Invalid date"});
 
-        // Εκτελούμε το query
-        const [rows] = await db.execute(query, [operatorID, formattedFromDate, formattedToDate]);
+        const firstDay = new Date(year, month - 1, 1);  //months are 0-indexed
+        const lastDay = new Date(year, month, 0);       //0th day of next month is last day of our month
 
-        // Επιστροφή του χρέους
-        const totalDebt = rows[0].totalDebt || 0; // Αν δεν υπάρχουν χρέη, επιστρέφουμε 0
-        return res.status(200).json({ debtAmount: totalDebt });
+        const formattedFirstDay = firstDay.toISOString().slice(0, 10).replace(/-/g, '');
+        const formattedLastDay = lastDay.toISOString().slice(0, 10).replace(/-/g, '');
+
+        const settlements = await calculateSettlements(formattedFirstDay, formattedLastDay);
+
+        res.status(200).json({ settlements: settlements});
 
     } catch (error) {
         console.error("❌ Σφάλμα στον υπολογισμό του χρέους:", error);

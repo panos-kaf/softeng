@@ -10,7 +10,7 @@ const chargesByRouter = require('./chargesBy');
 const paymentsRouter = require('./payments');
 const tollStationsRouter = require('./tollStations');
 const operatorsRouter = require('./operators');
-
+const debtCalculatorRouter = require('./debtCalculator');
 
 router.use('/admin', adminAuth, adminRouter);
 router.use('/tollStationPasses', tollStationPassesRouter);
@@ -20,8 +20,7 @@ router.use('/chargesBy', chargesByRouter);
 router.use('/payments', paymentsRouter);
 router.use('/tollStations', tollStationsRouter);
 router.use('/operators', operatorsRouter);
-
-
+router.use('/debtCalculator', debtCalculatorRouter);
 
 router.all('*', (req, res)=>
     res.status(404).json({ error: "Invalid endpoint."})
