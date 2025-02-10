@@ -16,26 +16,26 @@ exports.getChargesBy = async (req, res) => {
         try {
             // SQL Query to get charges by visiting operators
             const query = `
-                SELECT
-                    vOps.op_id AS visitingOpID, 
-                    COUNT(*) AS nPasses,
-                    SUM(transactions.charge) AS passesCost
-                FROM 
-                    transactions
-                JOIN
-                    operators tollOp 
-                JOIN 
-                    toll_stations ON tollOp.id = toll_stations.operator_id
-                JOIN 
-                    tags vtags ON transactions.tag_id = vtags.id
-                JOIN 
-                    operators vOps ON vtags.operator_id = vOps.id
-                WHERE 
-                    tollOp.op_id = ?
-                    AND vOps.id != toll_stations.operator_id
-                    AND transactions.timestamp BETWEEN ? AND ?
-                GROUP BY 
-                    vtags.operator_id;
+                    SELECT
+                        vOps.op_id AS visitingOpID, 
+                        COUNT(DISTINCT transactions.id) AS nPasses,
+                        SUM(transactions.charge) AS passesCost
+                    FROM 
+                        transactions
+                    JOIN 
+                        tags vtags ON transactions.tag_id = vtags.id
+                    JOIN 
+                        operators vOps ON vtags.operator_id = vOps.id
+                    JOIN 
+                        toll_stations ON transactions.toll_station_id = toll_stations.id
+                    JOIN 
+                        operators tollOp ON toll_stations.operator_id = tollOp.id
+                    WHERE 
+                        tollOp.op_id = ?
+                        AND vOps.id != toll_stations.operator_id
+                        AND transactions.timestamp BETWEEN ? AND ?
+                    GROUP BY 
+                        vOps.op_id;
             `;
     
             const [results] = await db.execute(query, [tollOpID, fromDate, toDate]);
