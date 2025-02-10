@@ -6,8 +6,7 @@ const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 const Payments = () => {
   const [operators, setOperators] = useState([]);
   const [selectedOperator, setSelectedOperator] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [debt, setDebt] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -56,13 +55,11 @@ const Payments = () => {
 
     const token = localStorage.getItem("token");
 
-    // Μετατροπή ημερομηνιών σε format χωρίς παύλες (YYYYMMDD)
-    const formattedFromDate = fromDate.replace(/-/g, "");
-    const formattedToDate = toDate.replace(/-/g, "");
+    // Μετατροπή του μήνα (YYYY-MM) σε μορφή χωρίς παύλες (YYYYMM)
+    const formattedMonth = selectedMonth.replace(/-/g, "");
 
     console.log("📡 Αναζήτηση χρέους προς operator:", selectedOperator);
-    console.log("📅 Από:", formattedFromDate);
-    console.log("📅 Μέχρι:", formattedToDate);
+    console.log("📆 Μήνας πληρωμής:", formattedMonth);
 
     try {
       const response = await axios.get(`${API_URL}/debtCalculator/${selectedOperator}/${formattedFromDate}/${formattedToDate}`, {
@@ -114,6 +111,8 @@ const Payments = () => {
     setLoading(false);
   };
 
+  const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>💳 Πληρωμές</h2>
@@ -136,20 +135,11 @@ const Payments = () => {
             </select>
           </div>
           <div style={styles.filterItem}>
-            <label>Από:</label>
+            <label>Μήνας Οφειλής:</label>
             <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-          <div style={styles.filterItem}>
-            <label>Μέχρι:</label>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
+              type="month"
+              value={selectedMonth || currentMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
               style={styles.input}
             />
           </div>
@@ -177,16 +167,66 @@ const Payments = () => {
 };
 
 const styles = {
-  container: { padding: "20px", maxWidth: "900px", margin: "auto" },
-  title: { textAlign: "left", marginBottom: "20px" },
-  filtersWrapper: { display: "flex", flexDirection: "column", alignItems: "center" },
-  filterContainer: { display: "flex", justifyContent: "center", gap: "20px", alignItems: "center", flexWrap: "wrap" },
-  filterItem: { display: "flex", flexDirection: "column", alignItems: "center" },
-  select: { padding: "8px", fontSize: "16px", width: "180px" },
-  input: { padding: "8px", fontSize: "16px", width: "150px" },
-  button: { marginTop: "20px", padding: "10px 20px", fontSize: "16px", backgroundColor: "#3a506b", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" },
-  payButton: { marginTop: "10px", padding: "10px 20px", fontSize: "16px", backgroundColor: "#28a745", color: "white", border: "none", cursor: "pointer", borderRadius: "5px" },
-  debtContainer: { marginTop: "20px", textAlign: "center" },
+  container: {
+    padding: "20px",
+    maxWidth: "900px",
+    margin: "auto"
+  },
+  title: {
+    textAlign: "left",
+    marginBottom: "20px"
+  },
+  filtersWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  filterContainer: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "20px",
+    alignItems: "center",
+    flexWrap: "wrap"
+  },
+  filterItem: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  select: {
+    padding: "8px",
+    fontSize: "16px",
+    width: "180px"
+  },
+  input: {
+    padding: "8px",
+    fontSize: "16px",
+    width: "150px"
+  },
+  button: {
+    marginTop: "20px",
+    padding: "10px 20px",
+    fontSize: "16px",
+    backgroundColor: "#3a506b",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+    borderRadius: "5px"
+  },
+  payButton: {
+    marginTop: "10px",
+    padding: "10px 20px",
+    fontSize: "16px",
+    backgroundColor: "#28a745",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+    borderRadius: "5px"
+  },
+  debtContainer: {
+    marginTop: "20px",
+    textAlign: "center"
+  },
 };
 
 export default Payments;
