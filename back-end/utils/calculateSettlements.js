@@ -1,13 +1,12 @@
 require('dotenv').config({ path: '../../.env' });
 
-const {logToFile} = require('./logToFile');
+const {logToFile, logToBoth, logToBothErr} = require('./logToFile');
 const db = require('./db');
 const { getChargesBy } = require('../controllers/chargesBy');
 
 function parseTollData(jsonData) {
     if (!jsonData || !jsonData.tollOpID || !Array.isArray(jsonData.vOpList)) {
-        console.error("Invalid JSON structure");
-        logToFile("Invalid JSON structure");
+        logToBothErr("Invalid JSON structure");
         return null;
     }
     
