@@ -1,11 +1,13 @@
 require('dotenv').config({ path: '../../.env' });
 
+const {logToFile} = require('./logToFile');
 const db = require('./db');
 const { getChargesBy } = require('../controllers/chargesBy');
 
 function parseTollData(jsonData) {
     if (!jsonData || !jsonData.tollOpID || !Array.isArray(jsonData.vOpList)) {
         console.error("Invalid JSON structure");
+        logToFile("Invalid JSON structure");
         return null;
     }
     
@@ -41,20 +43,18 @@ async function calculateSettlements(fromDate, toDate) {
         };
         
         await getChargesBy(req, res);
-        //console.log(res);
-        //console.log(`Debug: responseData for ${operator}:`, responseData);
-        if (!responseData) continue; // Skip processing if the response is null
-        
+
+        if (!responseData || responseData.message === 'No content') {
+            debts[operator] = {}; // Assign an empty debt object
+            continue; // Skip processing
+        }
+
         const debt = parseTollData(responseData); // Correct function call
-        
-        //console.log(`Debt for ${tollOpID} =`, JSON.stringify(debt));
         
         debts[operator] = debt; // Assign extracted debts to the operator
     }
     
-    await db.end();
-
-    //console.log("Debts structure:", JSON.stringify(debts, null, 1));
+    logToFile(`Debts structure: ${JSON.stringify(debts, null, 1)}`, 'settlements');
     
     let settlements = {};
     
@@ -71,7 +71,6 @@ async function calculateSettlements(fromDate, toDate) {
             settlements[op1][op2] = debt1 - debt2;
         }
     }
-    console.log("Final settlements:", settlements);
     return settlements;
 }
 
