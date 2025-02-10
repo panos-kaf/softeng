@@ -19,7 +19,7 @@ exports.in = async (req, res) => {
         const user = rows[0];
 
         if (!user) {
-            return res.status(401).json({ message: 'User does not exist.' });
+            return res.status(401).json({ message: `User '${username}' does not exist.` });
         }
         
         // ------------------------------------------------------
