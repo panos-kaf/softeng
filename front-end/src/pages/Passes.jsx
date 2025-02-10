@@ -128,6 +128,13 @@ const Passes = () => {
           🔎 Αναζήτηση
         </button>
       </div>
+      
+      {searched && (
+        <div style={styles.stationInfo}>
+          <p><strong>Σταθμός:</strong> {selectedStation}</p>
+  
+        </div>
+      )}
 
       {loading && <p>⏳ Φόρτωση...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -136,10 +143,9 @@ const Passes = () => {
         <table border="1" style={{ marginTop: "20px", width: "100%" }}>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Σταθμός</th>
-              <th>Ημερομηνία</th>
+              <th>Tag Provider</th>
               <th>Tag ID</th>
+              <th>Ημερομηνία</th>
               <th>Χρέωση</th>
             </tr>
           </thead>
@@ -147,10 +153,9 @@ const Passes = () => {
             {passes.length > 0 ? (
               passes.map((pass) => (
                 <tr key={pass.passID}>
-                  <td>{pass.passID}</td>
-                  <td>{pass.stationID}</td>
-                  <td>{pass.timestamp}</td>
+                  <td>{pass.tagProvider}</td>
                   <td>{pass.tagID}</td>
+                  <td>{new Date(pass.passTimestamp).toLocaleString("el-GR")}</td>
                   <td>{pass.passCharge}€</td>
                 </tr>
               ))
