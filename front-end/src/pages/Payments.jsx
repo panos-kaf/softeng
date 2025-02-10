@@ -65,7 +65,7 @@ const Payments = () => {
     console.log("📅 Μέχρι:", formattedToDate);
 
     try {
-      const response = await axios.get(`${API_URL}/debt/${selectedOperator}/${formattedFromDate}/${formattedToDate}`, {
+      const response = await axios.get(`${API_URL}/debtCalculator/${selectedOperator}/${formattedFromDate}/${formattedToDate}`, {
         headers: { "x-observatory-auth": token },
       });
 
