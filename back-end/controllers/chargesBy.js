@@ -14,7 +14,6 @@ exports.getChargesBy = async (req, res) => {
     try{
         const {fromDate, toDate} = calculateDatePeriod(date_from, date_to);
         try {
-            // SQL Query to get charges by visiting operators
             const query = `
                     SELECT
                         vOps.op_id AS visitingOpID, 
