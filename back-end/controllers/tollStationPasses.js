@@ -1,4 +1,5 @@
 const {formatDate, calculateDatePeriod} = require('../utils/date_conversion');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const db = require('../utils/db');
 
 exports.getAll = async (req, res, next) => {
@@ -63,7 +64,7 @@ exports.getPassesInDateRange = async (req, res, next) => {
                 passList : passes
             });
         } catch (error) {
-            console.error("Error fetching toll station passes:", error);
+            logToBothErr(`Error fetching toll station passes: ${error}`);
             res.status(500).json({ error: "Internal Server Error" });
         }
    } catch(error){return res.status(400).json({message:"Invalid date range"});}

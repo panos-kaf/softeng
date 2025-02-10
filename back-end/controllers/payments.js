@@ -1,7 +1,8 @@
 const db = require('../utils/db');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 
 exports.getAll = async(req, res, next) => {
-    console.log('hi');
+    logToBoth('hi');
 };
 
 exports.makePayment = async (req, res, next) => {

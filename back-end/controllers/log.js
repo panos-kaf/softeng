@@ -1,5 +1,6 @@
 const db = require('../utils/db');
 const bcrypt = require('bcrypt');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const jwt = require('jsonwebtoken');
 
 exports.getAll = async (req, res) => {
@@ -24,15 +25,15 @@ exports.in = async (req, res) => {
         
         // ------------------------------------------------------
         // encrypt bug check password
-        console.log("Username από frontend:", username);
-        console.log("Password από frontend:", password);
-        console.log("Hashed password από DB:", user.password);
+        logToFile(`Username από frontend: ${username}`);
+        logToFile(`Password από frontend: ${password}`);
+        logToFile(`Hashed password από DB: ${user.password}`);
         //-------------------------------------------------------
 
         // Check the password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            console.log(password);
+            logToBoth(`wrong password: ${password}`);
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
@@ -52,7 +53,7 @@ exports.in = async (req, res) => {
 
         res.status(200).json({ token, role: user.role, operator_name: user.username}); // Κρατάμε και τον ρόλο για τα end points στο front end
     } catch (err) {
-        console.error(err);
+        logToBothErr(err);
         res.status(500).json({ message: 'Internal server error' });
     }
 };

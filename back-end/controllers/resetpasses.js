@@ -1,4 +1,5 @@
 const db = require('../utils/db');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 
 exports.resetPasses = async(req, res, next) => {
     const connection = await db.getConnection();
@@ -18,12 +19,12 @@ exports.resetPasses = async(req, res, next) => {
         //await connection.query("ALTER TABLE payments AUTO_INCREMENT = 1");
 
         await connection.commit();
-        console.log("Passes have been reset");
+        logToBoth("Passes have been reset.");
         res.status(200).json({"status":"OK"});        
 
     } catch(error){
         await connection.rollback();
-        console.error(error);
+        logToBothErr(error);
         res.status(500).json({"status":"failed","info":error.message});
     } finally {
         connection.release();

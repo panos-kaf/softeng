@@ -1,4 +1,6 @@
 const db = require("../utils/db");
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
+
 
 exports.getDashboardStats = async (req, res) => {
     try {
@@ -7,7 +9,7 @@ exports.getDashboardStats = async (req, res) => {
 
         res.json({ totalOperators, totalTolls });
     } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
+        logToBothErr(`Error fetching dashboard stats: ${error}`);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };

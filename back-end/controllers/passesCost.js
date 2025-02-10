@@ -1,4 +1,5 @@
 const {calculateDatePeriod} = require('../utils/date_conversion');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const db = require('../utils/db');
 
 exports.getAll = async(req, res, next) => {
@@ -42,7 +43,7 @@ exports.getPassesCost = async (req, res) => {
                 passesCost: results[0].passesCost || 0.0,
             });
         } catch (error) {
-            console.error('Error calculating passes cost:', error);
+            logToBothErr(`Error calculating passes cost: ${error}`);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }

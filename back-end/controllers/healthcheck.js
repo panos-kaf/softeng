@@ -1,4 +1,6 @@
 const db = require('../utils/db');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
+
 
 exports.getHealthcheck = async(req, res, next) => {
     const connection_string = `mysql://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB}`;
@@ -14,7 +16,7 @@ exports.getHealthcheck = async(req, res, next) => {
             "n_passes": n_passes[0][0]['COUNT(*)']
         });
     } catch (error) {
-        console.error("Error fetching healthcheck:", error);
+        logToBothErr(`Error fetching healthcheck: ${error}`);
         res.status(401).json({status: "failed", "db_connection": connection_string,
         });
     }

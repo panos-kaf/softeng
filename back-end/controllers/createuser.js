@@ -1,4 +1,6 @@
 const db = require('../utils/db');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
+
 const bcrypt = require('bcrypt');
 
 exports.createuser = async(req, res, next) => {
@@ -19,11 +21,11 @@ exports.createuser = async(req, res, next) => {
             );
     
             await connection.commit(); // Commit transaction if successful
-            console.log('User created successfully with ID:', result.insertId);
+            logToBoth(`User created successfully with ID: ${result.insertId}`);
             res.status(200).json({status:'OK'});
         } catch (err) {
             await connection.rollback(); // Rollback transaction on error
-            console.error('Error creating user:', err.message);
+            logToBothErr(`Error creating user: ${err.message}`);
             res.status(400).json({'Error creating user':err.message});
         } finally {
             connection.release(); // Return connection to pool

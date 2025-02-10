@@ -1,4 +1,5 @@
 const {calculateDatePeriod} = require('../utils/date_conversion');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const db = require('../utils/db');
 
 exports.getAll = async(req, res, next) => {
@@ -49,11 +50,11 @@ exports.getPassAnalysis = async (req, res, next) => {
             });
         } catch (error) {
 
-            console.error("Database Error:", error.message); // Log the error
+            logToBothErr(`Database Error:, ${error.message}`); // Log the error
             return res.status(500).json({ message: "Internal Server Error" });
         }
     } catch (error) {
-        console.error("Date Parsing Error:", error.message); // Log the error
+        logToBothErr(`Date Parsing Error:, ${error.message}`); // Log the error
         return res.status(400).json({ message: "Invalid date range" });
     }
 };

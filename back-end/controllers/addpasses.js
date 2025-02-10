@@ -1,4 +1,5 @@
 const db = require('../utils/db');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -51,19 +52,19 @@ exports.addPasses = async(req, res, next) => {
                     ]);
                 }
                 await connection.commit();
-                console.log("Passes have been reset");
+                logToBoth("Added passes.");
                 res.status(200).json({"status":"OK"});        
 
             } catch(error){
                 await connection.rollback();
-                console.error(error);
+                logToBothErr(error);
                 res.status(500).json({"status":"failed","info":error.message});
             } finally {
                 connection.release();
             }
         });
     } catch(error){
-        console.error(error);
+        logToBothErr(error);
         res.status(500).send("An error occured while processing the CSV file");
     }
 };

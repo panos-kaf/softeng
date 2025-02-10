@@ -1,4 +1,5 @@
 const db = require("../utils/db");
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -75,19 +76,19 @@ exports.resetStations = async (req, res, next) => {
 
           // Commit the transaction
           await connection.commit();
-          console.log("Toll stations have been reset.");
+          logToBoth("Toll stations have been reset.");
           res.status(200).json({ status: "OK"});
         } catch (error) {
           // Rollback on error
           await connection.rollback();
-          console.error(error);
+          logToBothErr(error);
           res.status(500).json({ "status": "failed", "info": error.message});
         } finally {
           connection.release();
         }
       });
   } catch (error) {
-    console.error(error);
+    logToBoth(error);
     res.status(500).send("An error occurred while processing the CSV file.");
   }
 };

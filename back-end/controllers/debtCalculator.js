@@ -1,4 +1,6 @@
 const db = require('../utils/db');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
+
 const { calculateSettlements } = require('../utils/calculateSettlements');
 
 exports.getDebt = async (req, res) => {
@@ -22,7 +24,7 @@ exports.getDebt = async (req, res) => {
         res.status(200).json({ settlements: settlements});
 
     } catch (error) {
-        console.error("❌ Σφάλμα στον υπολογισμό του χρέους:", error);
+        logToBothErr(`❌ Σφάλμα στον υπολογισμό του χρέους: ${error}`);
         return res.status(500).json({ message: "Internal server error" });
     }
 };

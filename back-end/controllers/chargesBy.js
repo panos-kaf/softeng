@@ -1,4 +1,5 @@
 const {calculateDatePeriod} = require('../utils/date_conversion');
+const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const db = require('../utils/db');
 
 exports.getAll = async(req, res, next) => {
@@ -56,7 +57,7 @@ exports.getChargesBy = async (req, res) => {
             });
             
         } catch (error) {
-            console.error('Error fetching charges by operators:', error);
+            logToBothErr(`Error fetching charges by operators: ${error}`);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     } catch (error) {
