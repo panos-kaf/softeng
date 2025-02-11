@@ -16,7 +16,7 @@ exports.in = async (req, res) => {
 
     try {
         // Query the database for the user
-        const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+        const [rows] = await db.query('SELECT * FROM users WHERE username = ?' , [username]);
         const user = rows[0];
 
         if (!user) {
@@ -37,9 +37,16 @@ exports.in = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
+        const [operator_id] = await db.query('SELECT op_id FROM operators WHERE name = ?' , [username]);
+        var operator = operator_id[0];
+
+        if (!operator && user.role !== 'admin' ){
+            return req.status(404).json({message: 'Operator "${user.username}" not found.'});
+        }
+        
         // Generate a token
         const token = jwt.sign(
-            { id: user.id, username: user.username, role: user.role },
+            { id: user.id, username: user.username, role: user.role, operator_id: operator },
             process.env.JWT_SECRET,
             { expiresIn: '12h' } // Token expires in 1 hour
         );
@@ -51,7 +58,20 @@ exports.in = async (req, res) => {
             maxAge: 12 * 60 * 60 * 1000,  // Cookie expiration (12 hours)
         });
 
-        res.status(200).json({ token, role: user.role, operator_name: user.username}); // Κρατάμε και τον ρόλο για τα end points στο front end
+        if (user.role === 'user'){
+            res.status(200).json({
+                token,
+                role: user.role,
+                operator_name: user.username,
+                operator_id: operator.op_id
+        });}
+        if (user.role === 'admin'){
+            res.status(200).json({
+                token,
+                role: user.role,
+                operator_name: user.username
+                //operator_id: operator.op_id
+        });} // Κρατάμε και τον ρόλο για τα end points στο front end
     } catch (err) {
         logToBothErr(err);
         res.status(500).json({ message: 'Internal server error' });

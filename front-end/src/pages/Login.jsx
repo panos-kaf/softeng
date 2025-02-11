@@ -22,10 +22,10 @@ const Login = () => {
       });
 
       console.log("API Response:", response.data);
-
+      
       // Πάρε το token και το role από το API response
-      const { token, role, operator_name } = response.data;
-
+      const { token, role, operator_name, operator_id}= response.data;
+      console.log("operator_id",operator_id);
       if (!token || !role) {
         console.error("Το API δεν επέστρεψε σωστά το token ή το role!");
         setError("Σφάλμα σύνδεσης. Δοκίμασε ξανά.");
@@ -36,12 +36,12 @@ const Login = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
       localStorage.setItem("operator_name", operator_name);
+      localStorage.setItem("operator_id", operator_id);
 
       console.log("Operator name:", operator_name);
-
-
       console.log("Token αποθηκεύτηκε:", token);
       console.log("Role αποθηκεύτηκε:", role);
+      console.log("Operator_id",operator_id);
 
       // Ανακατεύθυνση στο σωστό Dashboard
       const newUrl = role === "admin" ? "/admin/home" : "/user/home";

@@ -3,6 +3,11 @@ const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 
 exports.getSettlement = async (req, res, next) => {
     const { fromOpID, toOpID, yyyymm } = req.params;
+
+    console.log("fromIpID:", fromOpID);
+    console.log("toOpID:", toOpID);
+    console.log("yyyymm:", yyyymm);
+
     try {
         const year = yyyymm.substring(0, 4);
         const month = yyyymm.substring(4, 6);

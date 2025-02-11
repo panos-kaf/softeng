@@ -14,6 +14,7 @@ const Payments = () => {
 
   // Παίρνουμε το όνομα του operator που έχει κάνει login
   const loggedInOperator = localStorage.getItem("operator_name");
+  const loggedInOperator_id = localStorage.getItem("operator_id");
 
   useEffect(() => {
     const fetchOperators = async () => {
@@ -62,16 +63,17 @@ const Payments = () => {
     console.log("📆 Περίοδος πληρωμής:", monthYear);
   
     try {
-      const response = await axios.get(`${API_URL}/debtCalculator/${monthYear}`, {
+
+      console.log(localStorage);
+
+      const response = await axios.get(`${API_URL}/getSettlement/${loggedInOperator_id}/${selectedOperator}/${monthYear}`, {
         headers: { "x-observatory-auth": token },
       });
-  
-      const settlements = response.data.settlements;
-  
-      // Φιλτράρισμα μόνο για τον συνδεδεμένο operator
-      const filteredSettlements = settlements[selectedOperator] || {}; 
-  
-      setDebt(filteredSettlements);
+      
+      // elegxos
+      console.log("Απόκριση API", response.data);
+
+      setDebt(response.data);
     } catch (err) {
       console.error("❌ Σφάλμα φόρτωσης χρέους:", err.response ? err.response.data : err);
       setError("❌ Σφάλμα φόρτωσης χρέους.");
@@ -134,7 +136,7 @@ const Payments = () => {
             >
               <option value="">Επιλέξτε Operator...</option>
               {operators.map((operator) => (
-                <option key={operator.id} value={operator.id}>
+                <option key={operator.id} value={operator.op_id}>
                   {operator.name}
                 </option>
               ))}
