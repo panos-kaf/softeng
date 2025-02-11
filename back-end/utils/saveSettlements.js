@@ -1,6 +1,6 @@
 require('dotenv').config({path: '../../.env'});
 
-const {logToFile} = require('./logToFile');
+const {logToFile, logToBoth, logToBothErr} = require('./logToFile');
 const db = require('./db');
 const { calculateSettlements } = require('./calculateSettlements');
 
@@ -12,7 +12,7 @@ async function saveSettlements() {
     const formattedFirstDay = firstDay.toISOString().slice(0,10).replace(/-/g,'');
     const formattedLastDay = lastDay.toISOString().slice(0,10).replace(/-/g,'');
 
-    const settlements = await calculateSettlements('20101010', '20261010');
+    const settlements = await calculateSettlements(formattedFirstDay, formattedLastDay);
 
     const connection = await db.getConnection();
     try {
@@ -24,8 +24,6 @@ async function saveSettlements() {
         for (const row of operators) {
             operatorMap[row.op_id] = row.id;
         }
-
-       console.log('Settlements:',settlements);
 
         const insertQuery = `
             INSERT INTO settlements (amount, date, from_operator, to_operator)
@@ -59,10 +57,10 @@ async function saveSettlements() {
 
         await Promise.all(insertPromises);  // Execute all insertions concurrently
         await connection.commit();
-        console.log("Settlements saved successfully.");
+        logToFile("Settlements saved successfully.",'settlements');
     } catch (error) {
         await connection.rollback();
-        console.error("Error saving settlements:", error);
+        logToBothErr("Error saving settlements:", error);
     } finally {
         connection.release();
     }
