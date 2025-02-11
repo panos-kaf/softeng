@@ -13,7 +13,7 @@ export default defineConfig({
       key: fs.readFileSync('../back-end/cert/selfsigned.key'),
       cert: fs.readFileSync('../back-end/cert/selfsigned.crt'),
     },
-    host: process.env.VITE_HOST_IP,
+    host: process.env.VITE_HOST,
     port: process.env.VITE_PORT
   },
 })
