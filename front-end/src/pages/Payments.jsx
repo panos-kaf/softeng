@@ -48,35 +48,39 @@ const Payments = () => {
       setError("Παρακαλώ επιλέξτε operator και μήνα!");
       return;
     }
-
+  
     setLoading(true);
     setError("");
     setPaymentSuccess(false);
-
+  
     const token = localStorage.getItem("token");
-
-    // Μετατροπή του μήνα (YYYY-MM) σε μορφή χωρίς παύλες (YYYYMM)
-    const formattedMonth = selectedMonth.replace(/-/g, "");
-
-    const firstDay = `${formattedMonth}01`; // YYYYMM01
-    const lastDay = `${formattedMonth}${new Date(parseInt(formattedMonth.substring(0, 4)), parseInt(formattedMonth.substring(4, 6)), 0).getDate()}`; // YYYYMM(τελευταία μέρα του μήνα)
-
-    console.log(" Αναζήτηση χρέους προς operator:", selectedOperator);
-    console.log(" Περίοδος πληρωμής:", firstDay, "έως", lastDay);
-
+  
+    // Μετατροπή του μήνα σε YYYYMM
+    const monthYear = selectedMonth.replace(/-/g, "");
+  
+    console.log("📡 Αναζήτηση χρέους προς operator:", selectedOperator);
+    console.log("📆 Περίοδος πληρωμής:", monthYear);
+  
     try {
-      const response = await axios.get(`${API_URL}/debtCalculator/${selectedOperator}/${firstDay}/${lastDay}`, {
+      const response = await axios.get(`${API_URL}/debtCalculator/${monthYear}`, {
         headers: { "x-observatory-auth": token },
       });
-
-      setDebt(response.data.debtAmount);
+  
+      const settlements = response.data.settlements;
+  
+      // Φιλτράρισμα μόνο για τον συνδεδεμένο operator
+      const filteredSettlements = settlements[selectedOperator] || {}; 
+  
+      setDebt(filteredSettlements);
     } catch (err) {
       console.error("❌ Σφάλμα φόρτωσης χρέους:", err.response ? err.response.data : err);
       setError("❌ Σφάλμα φόρτωσης χρέους.");
     }
-
+  
     setLoading(false);
   };
+  
+  
 
   const handlePayment = async () => {
     if (!debt || debt === 0) {
@@ -91,7 +95,7 @@ const Payments = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/pay`,
+        `${API_URL}/debtCalculator`,
         {
           operatorID: selectedOperator,
           amount: debt,
@@ -154,14 +158,29 @@ const Payments = () => {
       {loading && <p>⏳ Φόρτωση...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {debt !== null && (
-        <div style={styles.debtContainer}>
-          <p><strong>Χρέος προς Operator:</strong> {debt}€</p>
-          <button onClick={handlePayment} style={styles.payButton} disabled={debt === 0}>
-            💰 Πληρωμή
-          </button>
-        </div>
+      {/* Εμφάνιση των δεδομένων σε πίνακα */}
+      {debt && Object.keys(debt).length > 0 ? (
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th>Προς Operator</th>
+              <th>Οφειλή (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(debt).map(([otherOperator, amount]) => (
+              <tr key={otherOperator}>
+                <td>{otherOperator}</td>
+                <td>{amount.toFixed(2)} €</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>Δεν υπάρχουν χρέη για τον επιλεγμένο operator.</p>
       )}
+
+
 
       {paymentSuccess && <p style={{ color: "green" }}>✅ Πληρωμή ολοκληρώθηκε με επιτυχία!</p>}
     </div>
