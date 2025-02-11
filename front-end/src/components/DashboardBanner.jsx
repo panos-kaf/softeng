@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_URL = `${import.meta.env.VITE_API_URL}/api`;
+
 const DashboardBanner = () => {
-  const [stats, setStats] = useState({ totalOperators: 0, totalTolls: 0 });
+  const [stats, setStats] = useState({});
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get("http://localhost:9115/api/dashboard/stats");
+        const response = await axios.get(`${API_URL}/dashboard`);
         setStats(response.data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
