@@ -18,10 +18,27 @@ exports.resetStations = async (req, res, next) => {
 
         try {
           await connection.beginTransaction();
+
+          const [transactions] = await connection.query("SELECT COUNT(*) AS count FROM transactions");
+          const [settlements] = await connection.query("SELECT COUNT(*) FROM settlements");
+          if (trans[0].count > 0 || settlements[0].count > 0) {
+            return res.status(409).json(
+              {
+              "status": "failed", 
+              "info": "must reset passes before resetting stations"
+            });
+          }
           await connection.query("DELETE FROM transactions");
+          await connection.query("ALTER TABLE transactions AUTO_INCREMENT = 1");
+
           await connection.query("DELETE FROM tags");
+          await connection.query("ALTER TABLE tags AUTO_INCREMENT = 1");
+
           await connection.query("DELETE FROM toll_stations");
+          await connection.query("ALTER TABLE toll_stations AUTO_INCREMENT = 1");
+
           await connection.query("DELETE FROM operators");
+          await connection.query("ALTER TABLE toll_stations AUTO_INCREMENT = 1");
 
           const uniqueOps = results.reduce((acc, row) => {
               if (!acc.some(op => op.OpID === row.OpID))
