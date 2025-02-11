@@ -6,17 +6,16 @@ const authenticate = require('./middleware/auth');
 const loginRouter = require('./api/log');
 const apiRouter = require('./api/index');
 
-const HOST_IP = process.env.HOST_IP;
+const HOST = process.env.HOST;
 const FRONT_PORT = process.env.FRONTEND_PORT;
-const LAN_ORIGIN = `https://${HOST_IP}:${FRONT_PORT}`;
-const LOCALHOST_ORIGIN = `https://localhost:${FRONT_PORT}`;
+const ORIGIN = `https://${HOST}:${FRONT_PORT}`;
 
 const app = express();
 
 require('./cron/scheduleJobs');
 
 app.use(cors({
-    origin: LAN_ORIGIN,
+    origin: ORIGIN,
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));
