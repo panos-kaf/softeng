@@ -12,7 +12,8 @@ const tollStationsRouter = require('./tollStations');
 const operatorsRouter = require('./operators');
 const debtCalculatorRouter = require('./debtCalculator');
 const dashboardRouter = require('./dashboard');
-const getSettlementRouter = require('./getSettlement')
+const getSettlementRouter = require('./getSettlement');
+const makePaymentRouter = require('./makePayment');
 
 router.use('/admin', adminAuth, adminRouter);
 router.use('/tollStationPasses', tollStationPassesRouter);
@@ -25,7 +26,7 @@ router.use('/operators', operatorsRouter);
 router.use('/debtCalculator', debtCalculatorRouter);
 router.use('/dashboard', dashboardRouter);
 router.use('/getSettlement', getSettlementRouter);
-
+router.use('/makePayment', makePaymentRouter);
 
 router.all('*', (req, res)=>
     res.status(404).json({ error: "Invalid endpoint."})
