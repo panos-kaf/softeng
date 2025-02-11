@@ -9,7 +9,16 @@ const DashboardBanner = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get(`${API_URL}/dashboard`);
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.error("❌ Δεν υπάρχει token!");
+          return;
+        }
+
+        const response = await axios.get(`${API_URL}/dashboard`, {
+          headers: {"x-observatory-auth": token},
+        });
         setStats(response.data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
