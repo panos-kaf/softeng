@@ -21,6 +21,9 @@ function parseTollData(jsonData) {
 }
 
 async function calculateSettlements(fromDate, toDate) {
+
+    const formattedFromDate = fromDate.toISOString().slice(0,10).replace(/-/g,'');
+    const formattedToDate = toDate.toISOString().slice(0,10).replace(/-/g,'');
     
     const opQuery = `SELECT op_id FROM operators`;
     const [rows] = await db.query(opQuery);
@@ -28,7 +31,7 @@ async function calculateSettlements(fromDate, toDate) {
     let debts = {};
     
     for (const operator of operators) {
-        const req = { params: { tollOpID: operator, date_from: fromDate, date_to: toDate } };
+        const req = { params: { tollOpID: operator, date_from: formattedFromDate, date_to: formattedToDate } };
         
         let responseData = null; // Explicitly initialize responseData
         const res = {
