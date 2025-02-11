@@ -1,15 +1,16 @@
 const db = require("../utils/db");
-const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
-
 
 exports.getDashboardStats = async (req, res) => {
     try {
-        const [[{ totalOperators }]] = await pool.query("SELECT COUNT(*) AS totalOperators FROM operators");
-        const [[{ totalTolls }]] = await pool.query("SELECT COUNT(*) AS totalTolls FROM toll_stations");
+        const [operatorsResult] = await db.execute("SELECT COUNT(*) AS totalOperators FROM operators");
+        const [tollsResult] = await db.execute("SELECT COUNT(*) AS totalTolls FROM toll_stations");
+
+        const totalOperators = operatorsResult[0]?.totalOperators || 0;
+        const totalTolls = tollsResult[0]?.totalTolls || 0;
 
         res.json({ totalOperators, totalTolls });
     } catch (error) {
-        logToBothErr(`Error fetching dashboard stats: ${error}`);
+        console.error("Error fetching dashboard stats:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
