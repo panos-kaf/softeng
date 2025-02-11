@@ -8,9 +8,7 @@ exports.resetStations = async (req, res, next) => {
 
   try {
     const results = [];
-//test
-    // Parse the CSV file
-    fs.createReadStream(filePath)
+    fs.createReadStream(filePath) 
       .pipe(csv({ mapHeaders: ({ header }) => header.replace(/^\uFEFF/, "").trim() }))
       .on("data", (data) => results.push(data))
       .on("end", async () => {
@@ -21,7 +19,7 @@ exports.resetStations = async (req, res, next) => {
 
           const [transactions] = await connection.query("SELECT COUNT(*) AS count FROM transactions");
           const [settlements] = await connection.query("SELECT COUNT(*) FROM settlements");
-          if (trans[0].count > 0 || settlements[0].count > 0) {
+          if (transactions[0].count > 0 || settlements[0].count > 0) {
             return res.status(409).json(
               {
               "status": "failed", 
