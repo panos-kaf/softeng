@@ -1,4 +1,4 @@
-const saveSettlements = require('./saveSettlements');
+const {saveSettlements} = require('./saveSettlements');
 const {logToFile} = require('./logToFile');
 
 async function initSettlements() {
@@ -14,11 +14,8 @@ async function initSettlements() {
             const dateFrom = new Date(year, month - 1, 1); // First day of the month
             const dateTo = new Date(year, month, 0); // Last day of the month
 
-            const dateFromStr = dateFrom.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-            const dateToStr = dateTo.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-
-            logToFile(`Processing settlements for ${dateFromStr} to ${dateToStr}`,'settlements');
-            await saveSettlements(dateFromStr, dateToStr);
+            logToFile(`Processing settlements for ${dateFrom} to ${dateTo}`,'settlements');
+            await saveSettlements(dateFrom, dateTo);
         }
     }
 }

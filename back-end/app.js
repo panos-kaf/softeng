@@ -11,11 +11,6 @@ const FRONT_PORT = process.env.FRONTEND_PORT;
 const ORIGIN = `https://${HOST}:${FRONT_PORT}`;
 
 const app = express();
-const {initSettlements} = require('./utils/initSettlements');
-
-initSettlements().then(() => {
-    console.log("Settlement initialization complete.");
-});
 
 require('./cron/scheduleJobs');
 

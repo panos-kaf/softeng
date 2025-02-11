@@ -6,10 +6,9 @@ const { calculateSettlements } = require('./calculateSettlements');
 
 async function saveSettlements(dateFrom, dateTo) {
 
-    //const today = new Date();
-    //const firstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    //const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
-
+    const firstDay = new Date(dateTo.getFullYear(), dateTo.getMonth(), 2);
+    const SettlementDate = firstDay.toISOString().split('T')[0];
+    
     const settlements = await calculateSettlements(dateFrom, dateTo);
 
     const connection = await db.getConnection();
@@ -25,7 +24,7 @@ async function saveSettlements(dateFrom, dateTo) {
 
         const insertQuery = `
             INSERT INTO settlements (amount, date, from_operator, to_operator)
-            VALUES (?, NOW(), ?, ?)
+            VALUES (?, ?, ?, ?)
         `;
 
         const insertPromises = [];
@@ -47,7 +46,7 @@ async function saveSettlements(dateFrom, dateTo) {
         
                 if (amount !== 0) {
                     insertPromises.push(
-                        connection.execute(insertQuery, [amount, operatorMap[fromOpId], operatorMap[toOpId]])
+                        connection.execute(insertQuery, [amount, SettlementDate, operatorMap[fromOpId], operatorMap[toOpId]])
                     );
                 }
             }
@@ -63,7 +62,5 @@ async function saveSettlements(dateFrom, dateTo) {
         connection.release();
     }
 };
-
-saveSettlements();
 
 module.exports = {saveSettlements};

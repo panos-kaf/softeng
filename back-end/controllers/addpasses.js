@@ -2,6 +2,7 @@ const db = require('../utils/db');
 const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const fs = require("fs");
 const csv = require("csv-parser");
+const {initSettlements} = require('../utils/initSettlements');
 
 exports.addPasses = async(req, res, next) => {
     const filePath = "data/passes11.csv";
@@ -51,6 +52,11 @@ exports.addPasses = async(req, res, next) => {
                         tollID
                     ]);
                 }
+
+                initSettlements().then(() => {
+                    logToBoth("Settlement initialization complete.");
+                });
+                
                 await connection.commit();
                 logToBoth("Added passes.");
                 res.status(200).json({"status":"OK"});        
