@@ -22,7 +22,7 @@ const Payments = () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-          console.error("❌ Δεν υπάρχει token!");
+          console.error(" Δεν υπάρχει token!");
           return;
         }
 
@@ -37,7 +37,7 @@ const Payments = () => {
 
         setOperators(filteredOperators);
       } catch (error) {
-        console.error("❌ Σφάλμα φόρτωσης operators:", error.response ? error.response.data : error);
+        console.error(" Σφάλμα φόρτωσης operators:", error.response ? error.response.data : error);
       }
     };
 
@@ -83,8 +83,8 @@ const Payments = () => {
       
 
     } catch (err) {
-      console.error("❌ Σφάλμα φόρτωσης χρέους:", err.response ? err.response.data : err);
-      setError("❌ Σφάλμα φόρτωσης χρέους.");
+      console.error(" Σφάλμα φόρτωσης χρέους:", err.response ? err.response.data : err);
+      setError(" Σφάλμα φόρτωσης χρέους.");
     }
   
     setLoading(false);
@@ -92,40 +92,51 @@ const Payments = () => {
   
   
 
-  const handlePayment = async () => {
-    if (!debt || debt === 0) {
-      setError("Δεν υπάρχει ποσό προς πληρωμή!");
-      return;
-    }
-
+  const handlePayment = async (settlementID) => {
     setLoading(true);
     setError("");
-
+    setPaymentSuccess(false); // Καθαρίζουμε το μήνυμα επιτυχίας πριν την πληρωμή
+  
     const token = localStorage.getItem("token");
-
+  
+    if (!settlementID) {
+      setError("❌ Δεν υπάρχει διαθέσιμο Settlement ID για πληρωμή.");
+      setLoading(false);
+      return;
+    }
+  
     try {
+      console.log(`💰 Πληρωμή για Settlement ID: ${settlementID}`);
+  
       const response = await axios.post(
-        `${API_URL}/getSettlement/`,
-        {
-          operatorID: selectedOperator,
-          amount: debt,
-          monthYear: selectedMonth.replace(/-/g, "") + "01", // Αφαιρούμε τις παύλες πριν στείλουμε το μήνα
-        },
+        `${API_URL}/makePayment`,
+        { settlementID }, // Στέλνουμε το `settlementID` στο API
         {
           headers: { "x-observatory-auth": token },
         }
       );
-
-      console.log("✅ Πληρωμή επιτυχής:", response.data);
-      setPaymentSuccess(true);
-      setDebt(null); // Μηδενίζουμε το χρέος μετά την πληρωμή
+  
+      if (response.data.status === "OK") {
+        console.log("✅ Επιτυχής πληρωμή!");
+        setPaymentSuccess(true);
+        setDebt((prevDebt) => {
+          const updatedDebt = { ...prevDebt };
+          delete updatedDebt[settlementID]; // Αφαιρούμε το πληρωμένο χρέος από το UI
+          return updatedDebt;
+        });
+      } else {
+        console.error("❌ Η πληρωμή απέτυχε.");
+        setError("❌ Η πληρωμή απέτυχε.");
+      }
     } catch (err) {
       console.error("❌ Σφάλμα κατά την πληρωμή:", err.response ? err.response.data : err);
       setError("❌ Η πληρωμή απέτυχε.");
     }
-
+  
     setLoading(false);
   };
+  
+  
 
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
@@ -170,6 +181,7 @@ const Payments = () => {
 
       {/* Εμφάνιση των δεδομένων σε πίνακα */}
       {debt && Object.keys(debt).length > 0 ? (
+        <>
         <table style={styles.table}>
           <thead>
             <tr>
@@ -188,8 +200,14 @@ const Payments = () => {
             ))}
           </tbody>
         </table>
+        {Object.values(debt).some(amount => amount < 0) && (
+          <button style={styles.payButton} onClick={() => handlePayment()}>
+            Πληρωμή
+          </button>
+        )}
+        </>
       ) : (
-        <p>Δεν υπάρχουν χρέη για τον επιλεγμένο operator.</p>
+        <p></p>
       )}
 
 
@@ -212,7 +230,8 @@ const styles = {
   filtersWrapper: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: "30px"
   },
   filterContainer: {
     display: "flex",
@@ -247,14 +266,16 @@ const styles = {
     borderRadius: "5px"
   },
   payButton: {
-    marginTop: "10px",
+    display: "block",
+    margin: "20px auto",
     padding: "10px 20px",
     fontSize: "16px",
     backgroundColor: "#28a745",
     color: "white",
     border: "none",
     cursor: "pointer",
-    borderRadius: "5px"
+    borderRadius: "5px",
+    transition: "0.3s",
   },
   debtContainer: {
     marginTop: "20px",
