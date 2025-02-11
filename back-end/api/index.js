@@ -12,6 +12,7 @@ const tollStationsRouter = require('./tollStations');
 const operatorsRouter = require('./operators');
 const debtCalculatorRouter = require('./debtCalculator');
 const dashboardRouter = require('./dashboard');
+const getSettlementRouter = require('./getSettlement')
 
 router.use('/admin', adminAuth, adminRouter);
 router.use('/tollStationPasses', tollStationPassesRouter);
@@ -23,6 +24,7 @@ router.use('/tollStations', tollStationsRouter);
 router.use('/operators', operatorsRouter);
 router.use('/debtCalculator', debtCalculatorRouter);
 router.use('/dashboard', dashboardRouter);
+router.use('/getSettlement', getSettlementRouter);
 
 
 router.all('*', (req, res)=>
