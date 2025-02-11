@@ -7,7 +7,7 @@ const Payments = () => {
   const [operators, setOperators] = useState([]);
   const [selectedOperator, setSelectedOperator] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [debt, setDebt] = useState(null);
+  const [debt, setDebt] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -72,8 +72,16 @@ const Payments = () => {
       
       // elegxos
       console.log("Απόκριση API", response.data);
+    
+      const formattedDebt = response.data.reduce((acc, entry) => {
+        acc[entry.to_operator] = parseFloat(entry.amount); // Μετατροπή σε αριθμό
+        return acc;
+      }, {});
+      
+      console.log("📊 Μετασχηματισμένο Debt:", formattedDebt);
+      setDebt(formattedDebt);
+      
 
-      setDebt(response.data);
     } catch (err) {
       console.error("❌ Σφάλμα φόρτωσης χρέους:", err.response ? err.response.data : err);
       setError("❌ Σφάλμα φόρτωσης χρέους.");
@@ -97,7 +105,7 @@ const Payments = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/debtCalculator`,
+        `${API_URL}/getSettlement/`,
         {
           operatorID: selectedOperator,
           amount: debt,
@@ -173,7 +181,9 @@ const Payments = () => {
             {Object.entries(debt).map(([otherOperator, amount]) => (
               <tr key={otherOperator}>
                 <td>{otherOperator}</td>
-                <td>{amount.toFixed(2)} €</td>
+                <td style={{ color: amount < 0 ? "red" : "green" }}>
+                  {amount < 0 ? `${amount} €` : "Δεν υπάρχει οφειλή"}
+                </td>
               </tr>
             ))}
           </tbody>
