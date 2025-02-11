@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaUsers, FaRoad } from "react-icons/fa";
+import "./DashboardBanner.css";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
@@ -9,7 +11,16 @@ const DashboardBanner = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get(`${API_URL}/dashboard`);
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.error("❌ Δεν υπάρχει token!");
+          return;
+        }
+
+        const response = await axios.get(`${API_URL}/dashboard`, {
+          headers: {"x-observatory-auth": token},
+        });
         setStats(response.data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
@@ -19,14 +30,25 @@ const DashboardBanner = () => {
   }, []);
 
   return (
-    <div className="p-6 bg-blue-500 text-white rounded-2xl shadow-lg flex justify-between items-center">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold">{stats.totalOperators}</h2>
-        <p className="text-lg">Συνολικοί Operators</p>
-      </div>
-      <div className="text-center">
-        <h2 className="text-3xl font-bold">{stats.totalTolls}</h2>
-        <p className="text-lg">Συνολικά Διόδια</p>
+    <div className="dashboard-container">
+      <div className="cards-container">
+        {/* Card για Operators */}
+        <div className="card">
+          <FaUsers className="card-icon" />
+          <div className="card-text">
+            <h2 className="card-number">{stats.totalOperators ?? 0}</h2>
+            <p className="card-label">Συνολικοί Operators</p>
+          </div>
+        </div>
+
+        {/* Card για Διόδια */}
+        <div className="card green">
+          <FaRoad className="card-icon" />
+          <div className="card-text">
+            <h2 className="card-number">{stats.totalTolls ?? 0}</h2>
+            <p className="card-label">Συνολικά Διόδια</p>
+          </div>
+        </div>
       </div>
     </div>
   );
