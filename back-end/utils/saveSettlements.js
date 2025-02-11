@@ -4,15 +4,13 @@ const {logToFile, logToBoth, logToBothErr} = require('./logToFile');
 const db = require('./db');
 const { calculateSettlements } = require('./calculateSettlements');
 
-async function saveSettlements() {
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
+async function saveSettlements(dateFrom, dateTo) {
 
-    const formattedFirstDay = firstDay.toISOString().slice(0,10).replace(/-/g,'');
-    const formattedLastDay = lastDay.toISOString().slice(0,10).replace(/-/g,'');
+    //const today = new Date();
+    //const firstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    //const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
 
-    const settlements = await calculateSettlements(formattedFirstDay, formattedLastDay);
+    const settlements = await calculateSettlements(dateFrom, dateTo);
 
     const connection = await db.getConnection();
     try {
