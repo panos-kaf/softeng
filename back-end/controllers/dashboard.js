@@ -1,10 +1,9 @@
 const db = require("../utils/db");
-const pool = db.promise();
 
 exports.getDashboardStats = async (req, res) => {
     try {
-        const [operatorsResult] = await pool.query("SELECT COUNT(*) AS totalOperators FROM operators");
-        const [tollsResult] = await pool.query("SELECT COUNT(*) AS totalTolls FROM toll_stations");
+        const [operatorsResult] = await db.execute("SELECT COUNT(*) AS totalOperators FROM operators");
+        const [tollsResult] = await db.execute("SELECT COUNT(*) AS totalTolls FROM toll_stations");
 
         const totalOperators = operatorsResult[0]?.totalOperators || 0;
         const totalTolls = tollsResult[0]?.totalTolls || 0;
