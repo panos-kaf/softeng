@@ -47,7 +47,6 @@ CREATE TABLE transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL,
     charge NUMERIC(10, 2) NOT NULL,
-    settlement_id INT,
     tag_id INT,
     toll_station_id INT,
     CONSTRAINT fk_transactions_tags FOREIGN KEY (tag_id) REFERENCES tags(id),
