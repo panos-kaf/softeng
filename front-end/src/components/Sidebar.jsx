@@ -21,9 +21,11 @@ const Sidebar = () => {
         <li>
           <NavLink to={`/${role}/passes`} style={getLinkStyle}>🚗 Διελεύσεις</NavLink>
         </li>
+        {role === "user" && (
         <li>
           <NavLink to={`/${role}/payments`} style={getLinkStyle}>💳 Πληρωμές</NavLink>
         </li>
+        )}
         {role === "admin" && (
           <li>
             <NavLink to={`/${role}/settings`} style={getLinkStyle}>⚙️ Διαχείριση</NavLink>
