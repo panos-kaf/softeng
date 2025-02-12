@@ -1,6 +1,7 @@
 const {calculateDatePeriod} = require('../utils/date_conversion');
 const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const db = require('../utils/db');
+const {Parser} = require('json2csv');
 
 exports.getAll = async(req, res, next) => {
     let limit = undefined;
@@ -11,6 +12,8 @@ exports.getAll = async(req, res, next) => {
 }
 
 exports.getPassAnalysis = async (req, res, next) => {
+    let format = req.query.format && req.query.format.toLowerCase() === "csv" ? "csv" : "json";
+
     const { stationOpID, tagOpID, date_from, date_to } = req.params;
 
     try {
@@ -42,12 +45,25 @@ exports.getPassAnalysis = async (req, res, next) => {
                 passCharge: result.charge
             }));
 
-            res.status(200).json({
+            const response = {
                 periodFrom: fromDate,
                 periodTo : toDate,
                 nPasses : passes.length,
                 passList : passes
-            });
+                };
+                if (format==='json')
+                res.status(200).json(response);
+    
+                else{
+                // Convert JSON response to CSV
+                const json2csvParser = new Parser();
+                const csvData = json2csvParser.parse([response]);
+    
+                res.setHeader('Content-Type', 'text/csv');
+                res.setHeader('Content-Disposition', 'attachment; filename=passAnalysis.csv');
+                return res.status(200).send(csvData);
+                }
+
         } catch (error) {
 
             logToBothErr(`Database Error:, ${error.message}`); // Log the error

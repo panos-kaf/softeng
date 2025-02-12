@@ -1,6 +1,7 @@
 const {formatDate, calculateDatePeriod} = require('../utils/date_conversion');
 const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const db = require('../utils/db');
+const { Parser } = require('json2csv');
 
 exports.getAll = async (req, res, next) => {
     let limit = undefined;
@@ -11,6 +12,8 @@ exports.getAll = async (req, res, next) => {
 }
 
 exports.getPassesInDateRange = async (req, res, next) => {
+    let format = req.query.format && req.query.format.toLowerCase() === "csv" ? "csv" : "json";
+
     const { tollStationID, date_from, date_to } = req.params;
     try{
         const {fromDate, toDate} = calculateDatePeriod(date_from, date_to);
@@ -57,12 +60,24 @@ exports.getPassesInDateRange = async (req, res, next) => {
                 passCharge: result.passCharge
             }));
 
-            res.status(200).json({
-                periodFrom: fromDate,
-                periodTo : toDate,
-                nPasses : passes.length,
-                passList : passes
-            });
+            const response = {
+            periodFrom: fromDate,
+            periodTo : toDate,
+            nPasses : passes.length,
+            passList : passes
+            };
+            if (format==='json')
+            res.status(200).json(response);
+
+            else{
+            // Convert JSON response to CSV
+            const json2csvParser = new Parser();
+            const csvData = json2csvParser.parse([response]);
+
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition', 'attachment; filename=healthcheck.csv');
+            return res.status(200).send(csvData);
+            }
         } catch (error) {
             logToBothErr(`Error fetching toll station passes: ${error}`);
             res.status(500).json({ error: "Internal Server Error" });

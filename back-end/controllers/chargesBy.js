@@ -1,6 +1,7 @@
 const {calculateDatePeriod} = require('../utils/date_conversion');
 const {logToFile, logToBoth, logToBothErr} = require('../utils/logToFile');
 const db = require('../utils/db');
+const {Parser} = require('json2csv');
 
 exports.getAll = async(req, res, next) => {
     let limit = undefined;
@@ -11,6 +12,7 @@ exports.getAll = async(req, res, next) => {
 }
 
 exports.getChargesBy = async (req, res) => {
+    let format = req.query.format && req.query.format.toLowerCase() === "csv" ? "csv" : "json";
     const { tollOpID, date_from, date_to } = req.params;
     try{
         const {fromDate, toDate} = calculateDatePeriod(date_from, date_to);
@@ -43,8 +45,7 @@ exports.getChargesBy = async (req, res) => {
             if (!results.length) {
                 return res.status(204).json({ message: 'No content' });
             }
-    
-            res.status(200).json({
+            const response = {
                 tollOpID,
                 requestTimestamp: new Date().toISOString(),
                 periodFrom: fromDate,
@@ -54,7 +55,20 @@ exports.getChargesBy = async (req, res) => {
                     nPasses: row.nPasses,
                     passesCost: row.passesCost || 0.0,
                 })),
-            });
+                };
+
+                if (format==='json')
+                res.status(200).json(response);
+    
+                else{
+                // Convert JSON response to CSV
+                const json2csvParser = new Parser();
+                const csvData = json2csvParser.parse([response]);
+    
+                res.setHeader('Content-Type', 'text/csv');
+                res.setHeader('Content-Disposition', 'attachment; filename=chargesBy.csv');
+                return res.status(200).send(csvData);
+                }
             
         } catch (error) {
             logToBothErr(`Error fetching charges by operators: ${error}`);
