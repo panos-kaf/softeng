@@ -19,7 +19,7 @@ exports.getSettlement = async (req, res, next) => {
         const lastDayFormatted = lastDay.toISOString().split('T')[0];
         
         const query = `
-                SELECT * 
+                SELECT s.id, s.amount, s.date 
                 FROM settlements s
                 JOIN operators fromOp ON fromOp.id = s.from_operator
                 JOIN operators toOp ON toOp.id = s.to_operator
