@@ -76,7 +76,10 @@ const Payments = () => {
       
 
       const formattedDebt = response.data.reduce((acc, entry) => {
-        acc[entry.id] = parseFloat(entry.amount); // Μετατροπή σε αριθμό
+        acc[entry.id] = {
+          amount : parseFloat(entry.amount), // Μετατροπή σε αριθμό
+          isPaid : entry.is_paid,
+        }
         return acc;
       }, {});
       
@@ -139,8 +142,7 @@ const Payments = () => {
     setLoading(false);
   };
   
-  
-  const settlementEntry = Object.entries(debt).find(([id, amount]) => amount < 0);
+  const settlementEntry = Object.entries(debt).find(([id, {amount, isPaid}]) => amount < 0 && isPaid === 0);
   const settlementID = settlementEntry ? settlementEntry[0] : null;
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
@@ -194,21 +196,22 @@ const Payments = () => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(debt).map(([otherOperator, amount]) => (
-              <tr key={otherOperator}>
+            {Object.entries(debt).map(([id, {amount,isPaid}]) => (
+              <tr key={id}>
                 {/*<td>{otherOperator}</td>*/}
-                <td style={{ color: amount < 0 ? "red" : "green" }}>
-                  {amount < 0 ? `${amount} €` : "Δεν υπάρχει οφειλή"}
+                <td style={{ color: amount < 0 && isPaid !==1 ? "red" : "green" }}>
+                  {amount < 0 && isPaid ===0 ? `${amount} €` : "Δεν υπάρχει οφειλή"}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {Object.entries(debt).find(([id, amount]) => amount < 0) && (
+        {settlementID && (
           <button style={styles.payButton} onClick={() => handlePayment(settlementID)}>
             Πληρωμή
           </button>
         )}
+
         </>
       ) : (
         <p></p>
