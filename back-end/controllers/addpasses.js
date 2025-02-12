@@ -6,7 +6,6 @@ const {initSettlements} = require('../utils/initSettlements');
 
 exports.addPasses = async(req, res, next) => {
     var filePath = req.body.filePath;
-    console.log(filePath);
     if (!filePath) filePath = "data/passes11.csv";    
 
     try {
