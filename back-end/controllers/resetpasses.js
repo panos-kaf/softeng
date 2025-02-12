@@ -14,9 +14,6 @@ exports.resetPasses = async(req, res, next) => {
         
         await connection.query("DELETE FROM settlements");
         await connection.query("ALTER TABLE settlements AUTO_INCREMENT = 1");
-        
-        await connection.query("DELETE FROM payments");
-        await connection.query("ALTER TABLE payments AUTO_INCREMENT = 1");
 
         await connection.commit();
         logToBoth("Passes have been reset.");

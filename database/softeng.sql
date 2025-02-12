@@ -59,13 +59,7 @@ CREATE TABLE settlements (
     date TIMESTAMP NOT NULL,
     from_operator INT NOT NULL,
     to_operator INT NOT NULL,
+    is_paid BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_settlements_from_operator FOREIGN KEY (from_operator) REFERENCES operators(id),
     CONSTRAINT fk_settlements_to_operator FOREIGN KEY (to_operator) REFERENCES operators(id)
-);
-
-CREATE TABLE payments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    settlement_id INT NOT NULL,
-    CONSTRAINT fk_payments_settlement FOREIGN KEY (settlement_id) REFERENCES settlements(id)
 );
