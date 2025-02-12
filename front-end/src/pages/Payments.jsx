@@ -7,7 +7,7 @@ const Payments = () => {
   const [operators, setOperators] = useState([]);
   const [selectedOperator, setSelectedOperator] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [debt, setDebt] = useState();
+  const [debt, setDebt] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -72,14 +72,17 @@ const Payments = () => {
       
       // elegxos
       console.log("Απόκριση API", response.data);
-    
+      
+      
+
       const formattedDebt = response.data.reduce((acc, entry) => {
-        acc[entry.to_operator] = parseFloat(entry.amount); // Μετατροπή σε αριθμό
+        acc[entry.id] = parseFloat(entry.amount); // Μετατροπή σε αριθμό
         return acc;
       }, {});
       
       console.log("📊 Μετασχηματισμένο Debt:", formattedDebt);
       setDebt(formattedDebt);
+      console.log('debt:',debt);
       
 
     } catch (err) {
@@ -137,7 +140,8 @@ const Payments = () => {
   };
   
   
-
+  const settlementEntry = Object.entries(debt).find(([id, amount]) => amount < 0);
+  const settlementID = settlementEntry ? settlementEntry[0] : null;
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
   return (
@@ -192,7 +196,7 @@ const Payments = () => {
           <tbody>
             {Object.entries(debt).map(([otherOperator, amount]) => (
               <tr key={otherOperator}>
-                <td>{otherOperator}</td>
+                {/*<td>{otherOperator}</td>*/}
                 <td style={{ color: amount < 0 ? "red" : "green" }}>
                   {amount < 0 ? `${amount} €` : "Δεν υπάρχει οφειλή"}
                 </td>
@@ -200,8 +204,8 @@ const Payments = () => {
             ))}
           </tbody>
         </table>
-        {Object.values(debt).some(amount => amount < 0) && (
-          <button style={styles.payButton} onClick={() => handlePayment()}>
+        {Object.entries(debt).find(([id, amount]) => amount < 0) && (
+          <button style={styles.payButton} onClick={() => handlePayment(settlementID)}>
             Πληρωμή
           </button>
         )}
@@ -209,8 +213,6 @@ const Payments = () => {
       ) : (
         <p></p>
       )}
-
-
 
       {paymentSuccess && <p style={{ color: "green" }}>✅ Πληρωμή ολοκληρώθηκε με επιτυχία!</p>}
     </div>
