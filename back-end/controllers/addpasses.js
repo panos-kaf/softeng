@@ -5,7 +5,9 @@ const csv = require("csv-parser");
 const {initSettlements} = require('../utils/initSettlements');
 
 exports.addPasses = async(req, res, next) => {
-    const filePath = "data/passes11.csv";
+    var filePath = req.body.filePath;
+    console.log(filePath);
+    if (!filePath) filePath = "data/passes11.csv";    
 
     try {
         const results = [];

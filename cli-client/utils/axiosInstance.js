@@ -1,6 +1,12 @@
+
 const axiosInit = require('axios');
 const https = require('https');
 const fs = require('fs');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }); // Load dotenv
+
+const certPath = path.resolve(__dirname, process.env.CLI_SSL_CERT);
+console.log('Resolved cert path:', certPath);
 
 // Load your self-signed certificate
 const cert = fs.readFileSync(process.env.CLI_SSL_CERT);

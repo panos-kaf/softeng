@@ -2,9 +2,12 @@ const axios = require('../utils/axiosInstance');
 const {getToken} = require('../utils/token');
 const fs = require('fs');
 const {ADMIN_ROUTE} = require('../utils/routes');
+const bcrypt = require('bcrypt');
+const db = require('../../back-end/utils/db');
+const FormData = require('form-data');
 
 module.exports = (program) => {
-    program
+  program
     .command('admin')
     .description('Admin operations (usermod, users, addpasses)')
     .option('--usermod', 'Create or update a user')
@@ -16,14 +19,14 @@ module.exports = (program) => {
     .action(async (options) => {
       try {
         const token = getToken();
-  
+
         if (options.usermod) {
-          const { username, password } = options;
+          const { username, passw: password } = options;
           if (!username || !password) {
             console.error("Username and password are required.");
-            return;
+            process.exit(1);
           }
-  
+
           try {
             const hashedPassword = await bcrypt.hash(password, 10);
             await db.execute(
@@ -39,7 +42,11 @@ module.exports = (program) => {
         else if (options.users) {
           try {
             const [users] = await db.execute('SELECT username FROM users');
-            console.log("Users:", users.map(user => user.username).join(', '));
+            if (users.length === 0) {
+              console.log("No users found.");
+            } else {
+              console.log("Users:", users.map(user => user.username).join(', '));
+            }
           } catch (err) {
             console.error("Error:", err.message);
           }
@@ -48,32 +55,40 @@ module.exports = (program) => {
         else if (options.addpasses) {
           if (!options.source) {
             console.error('--source is required for --addpasses.');
-            return;
+            process.exit(1);
           }
-  
+
           if (!fs.existsSync(options.source)) {
             console.error('CSV file not found:', options.source);
-            return;
+            process.exit(1);
           }
-  
-         const formData = new FormData();
-          formData.append('csv', fs.createReadStream(options.source));
-  
-          const response = await axios.post(`${ADMIN_ROUTE}/addpasses`,formData, 
-            {}, 
+
+          const formData = new FormData();
+          formData.append('filePath', options.source);  // ✅ Corrected field name
+          //formData.append('csv', fs.createReadStream(options.source));
+
+          const response = await axios.post(
+            `${ADMIN_ROUTE}/addpasses`, 
+            formData, 
             {
               headers: { 
-              'x-observatory-auth': token,
-              ...formData.getHeaders()
-             } 
-          });
-  
+                'x-observatory-auth': token,
+                ...formData.getHeaders()
+              } 
+            }
+          );
+
           console.log(response.data.message || 'Passes added successfully.');
         } else {
           console.error('Invalid admin command. Use --usermod, --users, or --addpasses.');
+          process.exit(1);
         }
+
+        process.exit(0);
+
       } catch (error) {
         console.error('Admin command failed:', error.response?.data || error.message);
+        process.exit(1); // Exit with an error code
       }
     });
 };

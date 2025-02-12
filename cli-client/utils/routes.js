@@ -1,4 +1,4 @@
-const HOST = process.env.HOST_IP;
+const HOST = process.env.HOST;
 const PORT = process.env.HTTPS_PORT;
 
 const ROUTE = `https://${HOST}:${PORT}`;

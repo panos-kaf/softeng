@@ -2,7 +2,6 @@
 
 require('dotenv').config({ path: '../.env' });
 
-
 const axios = require('./utils/axiosInstance');
 const { Command } = require('commander');
 const fs = require('fs');
