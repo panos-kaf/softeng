@@ -13,11 +13,14 @@ module.exports = (program) => {
     .option('-d, --from <from> ', 'Specify the starting date (datefrom)')
     .option('-t, --to <to>', 'Specify the ending date (dateto)')
     .option('-f, --format <format>', 'Specify the output format (json or csv)', (value) => {
-      
-      if (!validFormats.includes(value.toLowerCase())) {
-        throw new Error('Invalid format! Use "json" or "csv".');
-      }
-      return value.toLowerCase();
+      try{   
+        if (!validFormats.includes(value.toLowerCase())) {
+          throw new Error('Invalid format! Use "json" or "csv".');
+        }
+        return value.toLowerCase();
+      }catch(error){
+        console.error('TollStationPasses failed:', error.message);
+        process.exit(1);}
     }, 'csv')
     .action(async (options) => {
       try {
@@ -25,12 +28,12 @@ module.exports = (program) => {
         const { stationop, tagop, from, to, format } = options;
   
         if (!stationop) {
-          console.error('Please provide a station using --station.');
+          console.error('Please provide a station operator using --station.');
           return;
         }
 
         if (!tagop) {
-          console.error('Please provide a tag using --tagop.');
+          console.error('Please provide a tag operator using --tagop.');
           return;
         } 
   
@@ -46,8 +49,8 @@ module.exports = (program) => {
         const token = getToken();
   
         // Send format as a query parameter
-        const response = await axios.get(`${API_ROUTE}/passAnalysis`, {
-          params: { stationop, tagop, from, to, format },
+        const response = await axios.get(`${API_ROUTE}/passAnalysis/${stationop}/${tagop}/${from}/${to}`, {
+          params: { format },
           headers: { 'x-observatory-auth': token } //  Send token in the request
         });
   

@@ -48,8 +48,6 @@ async function createUsers() {
 
     // Close the connection pool **after all users are created**
     await pool.end();
-    console.log('Database connection pool closed.');
 }
 
-// Call the function to create users
 createUsers();
