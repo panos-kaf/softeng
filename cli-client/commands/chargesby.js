@@ -9,13 +9,20 @@ module.exports = (program) => {
     .option('-o, --opid <opid>', 'Specify the stationop (op1)')
     .option('-f, --from <from> ', 'Specify the starting date (datefrom)')
     .option('-t, --to <to>', 'Specify the ending date (dateto)')
+    .option('-f, --format <format>', 'Specify the output format (json or csv)', (value) => {
+      
+      if (!validFormats.includes(value.toLowerCase())) {
+        throw new Error('Invalid format! Use "json" or "csv".');
+      }
+      return value.toLowerCase();
+    }, 'csv')
     .action(async (options) => {
       try {
   
-        const { op, from, to} = options;
+        const { opid, from, to, format} = options;
   
-        if (!op) {
-          console.error('Please provide a station using --station.');
+        if (!opid) {
+          console.error('Please provide a station using --opid.');
           return;
         }
   
@@ -30,16 +37,15 @@ module.exports = (program) => {
   
         const token = getToken();
   
-        const format = 'csv';
         // Send format as a query parameter
         const response = await axios.get(`${API_ROUTE}/chargesBy`, {
-          params: { op, from, to, format },
+          params: { opid, from, to, format },
           headers: { 'x-observatory-auth': token } //  Send token in the request
         });
   
         console.log(response.data); // API already returns the correct format
       } catch (error) {
-        console.error('PassesCost failed:', error.response?.data || error.message);
+        console.error('ChargesBy failed:', error.response?.data || error.message);
       }
     });
 };  

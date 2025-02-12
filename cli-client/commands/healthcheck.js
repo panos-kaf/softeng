@@ -2,6 +2,8 @@ const axios = require('../utils/axiosInstance');
 const {getToken} = require('../utils/token');
 const {ADMIN_ROUTE} = require('../utils/routes');
 
+const validFormats = ['json', 'csv']; // Define valid formats here based on your API's requirements
+
 module.exports = (program) => {
     program
   .command('healthcheck')

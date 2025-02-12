@@ -8,15 +8,22 @@ module.exports = (program) => {
     .command('passescost')
     .description('Analize passes according to station and period')
     .option('-s, --stationop <stationop>', 'Specify the stationop (op1)')
-    .option('-f, --from <from> ', 'Specify the starting date (datefrom)')
+    .option('--from <from> ', 'Specify the starting date (datefrom)')
     .option('-t, --to <to>', 'Specify the ending date (dateto)')
+    .option('-f, --format <format>', 'Specify the output format (json or csv)', (value) => {
+      
+      if (!validFormats.includes(value.toLowerCase())) {
+        throw new Error('Invalid format! Use "json" or "csv".');
+      }
+      return value.toLowerCase();
+    }, 'csv')
     .action(async (options) => {
       try {
   
-        const { station, from, to} = options;
+        const { stationop, from, to, format} = options;
   
-        if (!station) {
-          console.error('Please provide a station using --station.');
+        if (!stationop) {
+          console.error('Please provide a station using --stationop.');
           return;
         }
   
@@ -31,10 +38,9 @@ module.exports = (program) => {
   
         const token = getToken();
   
-        const format = 'csv';
         // Send format as a query parameter
         const response = await axios.get(`${API_ROUTE}/passesCost`, {
-          params: { station, from, to, format },
+          params: { stationop, from, to, format },
           headers: { 'x-observatory-auth': token } //  Send token in the request
         });
   

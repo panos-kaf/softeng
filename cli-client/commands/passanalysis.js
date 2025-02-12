@@ -26,6 +26,11 @@ module.exports = (program) => {
           console.error('Please provide a station using --station.');
           return;
         }
+
+        if (!tagop) {
+          console.error('Please provide a tag using --tagop.');
+          return;
+        } 
   
         if (!from) {
           console.error('Please provide a starting date using --from.');

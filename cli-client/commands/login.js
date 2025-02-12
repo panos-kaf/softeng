@@ -12,6 +12,12 @@ module.exports = (program) => {
     .action(async (options) => {
       try {
         const { username, password } = options;
+
+        if(!username || !password){
+          console.error('Please provide both username and password.');
+          return;
+        }
+        
         const response = await axios.post(`${ROUTE}/login`, {
           username,
           password
