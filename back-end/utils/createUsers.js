@@ -50,5 +50,4 @@ async function createUsers() {
     await pool.end();
 }
 
-// Call the function to create users
 createUsers();
