@@ -2,12 +2,14 @@ const axios = require('../utils/axiosInstance');
 const {getToken} = require('../utils/token');
 const {API_ROUTE} = require('../utils/routes');
 
+const validFormats = ['json', 'csv'];
+
 module.exports = (program) => {
-    program
+  program
     .command('chargesby')
     .description('Analize passes according to station and period')
     .option('-o, --opid <opid>', 'Specify the stationop (op1)')
-    .option('-f, --from <from> ', 'Specify the starting date (datefrom)')
+    .option('--from <from> ', 'Specify the starting date (datefrom)')
     .option('-t, --to <to>', 'Specify the ending date (dateto)')
     .option('-f, --format <format>', 'Specify the output format (json or csv)', (value) => {
       

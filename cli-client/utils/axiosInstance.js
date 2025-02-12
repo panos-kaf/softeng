@@ -6,10 +6,11 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }); // Load dotenv
 
 const certPath = path.resolve(__dirname, process.env.CLI_SSL_CERT);
-console.log('Resolved cert path:', certPath);
+//console.log('Resolved cert path:', certPath);
 
 // Load your self-signed certificate
-const cert = fs.readFileSync(process.env.CLI_SSL_CERT);
+//const cert = fs.readFileSync(process.env.CLI_SSL_CERT);
+const cert = fs.readFileSync(certPath);
 
 // Create an https.Agent to trust the self-signed certificate
 const agent = new https.Agent({

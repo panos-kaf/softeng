@@ -7,11 +7,11 @@ module.exports = (program) => {
   program
     .command('login')
     .option('-u, --username <username>', 'Enter username')
-    .option('-p, --password <password>', 'Enter password')
+    .option('-p, --passw <password>', 'Enter password')
     .description('Authenticate the user and store the token')
     .action(async (options) => {
       try {
-        const { username, password } = options;
+        const { username, passw: password } = options;
 
         if(!username || !password){
           console.error('Please provide both username and password.');

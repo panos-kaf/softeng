@@ -31,8 +31,16 @@ async function calculateSettlements(fromDate, toDate) {
     let debts = {};
     
     for (const operator of operators) {
-        const req = { params: { tollOpID: operator, date_from: formattedFromDate, date_to: formattedToDate } };
-        
+        const req = {
+            query: {
+              format: 'json'  // Correcting the assignment to 'json' as a string
+            },
+            params: {
+              tollOpID: operator,         // Assuming 'operator' is already defined
+              date_from: formattedFromDate,  // Assuming 'formattedFromDate' is already defined
+              date_to: formattedToDate     // Assuming 'formattedToDate' is already defined
+            }
+          };        
         let responseData = null; // Explicitly initialize responseData
         const res = {
             status: function (code) {

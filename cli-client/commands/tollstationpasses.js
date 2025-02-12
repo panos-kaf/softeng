@@ -2,6 +2,8 @@ const axios = require('../utils/axiosInstance');
 const {getToken} = require('../utils/token');
 const {API_ROUTE} = require('../utils/routes');
 
+const validFormats = ['json', 'csv']; // Define valid formats here based on your API's requirements
+
 module.exports = (program) => {
     program
     .command('tollstationpasses')
@@ -38,9 +40,9 @@ module.exports = (program) => {
         }
   
         // Send format as a query parameter
-  
         const response = await axios.get(`${API_ROUTE}/tollStationPasses`, {
-          params: { station, from, to, format },
+          query: {format},
+          params: { station, from, to },
           headers: { 'x-observatory-auth': token } //  Send token in the request
         });
   
