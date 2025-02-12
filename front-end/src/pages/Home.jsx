@@ -1,5 +1,4 @@
 import React from "react";
-
 import DashboardBanner from "../components/DashboardBanner";
 
 const Home = () => {
@@ -12,6 +11,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-

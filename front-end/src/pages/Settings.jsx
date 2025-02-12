@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios"; 
 
 const API_URL = `${import.meta.env.VITE_API_URL}/api`;
@@ -10,6 +10,18 @@ const Settings = () => {
   const [showDetails, setShowDetails] = useState(false); 
   const [resetPasses, setResetPassesStatus] = useState(null);
   const [addPasses, setAddPassesStatus] = useState(null);
+
+  // useEffect για την αυτόματη εξαφάνιση των μηνυμάτων (εκτός από το Healthcheck)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setResetStatus(null);
+      setResetPassesStatus(null);
+      setAddPassesStatus(null);
+    }, 4000); // 4 δευτερόλεπτα
+
+    return () => clearTimeout(timer);
+  }, [resetStatus, resetPasses, addPasses]); // Ξεκινάει κάθε φορά που αλλάζει κάποιο από αυτά
+
 
   /* 📡 Healthcheck */
   const handleHealthcheck = async () => {
@@ -48,34 +60,45 @@ const Settings = () => {
   const handleResetStations = async () => {
     try {
       console.log("🛠 Reset Stations request ξεκίνησε...");
-
+  
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("❌ No token found in localStorage!");
         setResetStatus({ message: "❌ Δεν βρέθηκε token!", error: true });
         return;
       }
-
+  
       console.log("🛠 Στέλνουμε request στο API...");
       const response = await axios.post(`${ADMIN_URL}/resetstations`, {}, {
         headers: { "x-observatory-auth": token },
       });
-
+  
       console.log("✅ Reset Stations επιτυχές:", response.data);
       setResetStatus({
         message: "✅ Επαναφορά σταθμών διοδίων ολοκληρώθηκε!",
         data: response.data,
         error: false,
       });
-
+  
     } catch (error) {
       console.error("❌ Reset Stations request απέτυχε:", error);
-      setResetStatus({
-        message: `❌ Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
-        error: true,
-      });
+  
+      // Έλεγχος για error 409
+      if (error.response?.status === 409) {
+        setResetStatus({
+          message: "⚠️ Προσοχή: Πρέπει να γίνει Reset Passes πριν το Reset Stations!",
+          error: "warning", // Δηλώνει ότι πρόκειται για προειδοποίηση (warning)
+        });
+      } else {
+        setResetStatus({
+          message: `❌ Σφάλμα: ${error.response?.data?.message || "Αποτυχία σύνδεσης"}`,
+          error: true,
+        });
+        return ;
+      }
     }
   };
+  
 
 /** 🛠 Reset Passes */
 const handleResetPasses = async () => {
@@ -150,11 +173,11 @@ const handleAddPasses = async () => {
         <button style={styles.button} onClick={handleHealthcheck}>
           📡 Healthcheck
         </button>
-        <button style={styles.button} onClick={handleResetStations}>
-          🛠️ Reset Stations
-        </button>
         <button style={styles.button} onClick={handleResetPasses}>
           🔄 Reset Passes
+        </button>
+        <button style={styles.button} onClick={handleResetStations}>
+          🛠️ Reset Stations
         </button>
         <button style={styles.button} onClick={handleAddPasses}>
           ➕ Add Passes
@@ -183,17 +206,16 @@ const handleAddPasses = async () => {
           )}
         </div>
       )}
-
-      {/* Εμφάνιση Μηνυμάτων Reset Stations */}
-      {resetStatus && (
-        <div style={resetStatus.error ? styles.errorMessage : styles.successMessage}>
-          {resetStatus.message}
-        </div>
-      )}
       {/* Εμφάνιση Μηνυμάτων Reset Passes */}
       {resetPasses && (
         <div style={resetPasses.error ? styles.errorMessage : styles.successMessage}>
           {resetPasses.message}
+        </div>
+      )}
+      {/* Εμφάνιση Μηνυμάτων Reset Stations */}
+      {resetStatus && (
+        <div style={resetStatus.error ? styles.errorMessage : styles.successMessage}>
+          {resetStatus.message}
         </div>
       )}
       {/* Εμφάνιση Μηνυμάτων Add Passes */}
