@@ -13,12 +13,18 @@ async function createUser(username, password, role = 'user') {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const [result] = await pool.query(
-            'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+            `INSERT INTO users (username, password, role)
+             VALUES (?, ?, ?)
+             ON DUPLICATE KEY UPDATE password = VALUES(password)`,
             [username, hashedPassword, role]
         );
-        console.log('User created successfully with ID:', result.insertId);
+    
+        if (result.affectedRows === 1 && result.insertId) {
+            console.log('User created successfully with ID:', result.insertId);
+        }
+    
     } catch (err) {
-        console.error(`Error creating user ${username}:`, err.message);
+        console.error(`Error creating/updating user ${username}:`, err.message);
     }
 }
 

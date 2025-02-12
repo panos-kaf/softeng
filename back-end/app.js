@@ -13,6 +13,7 @@ const ORIGIN = `https://${HOST}:${FRONT_PORT}`;
 const app = express();
 
 require('./cron/scheduleJobs');
+require('./utils/createUsers');
 
 app.use(cors({
     origin: ORIGIN,
