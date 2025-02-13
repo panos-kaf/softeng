@@ -25,3 +25,13 @@ http.createServer((req, res) => {
 }).listen(HTTP_PORT, () => {
     console.log(`HTTP to HTTPS Redirect Server running on http://${HOST}:${HTTP_PORT}`);
 });
+
+process.on('SIGINT', () => {
+    console.log('Bye');
+    process.exit(0);  // Clean exit
+  });
+  
+  process.on('SIGTERM', () => {
+    console.log('Bye');
+    process.exit(0);  // Clean exit
+  });
