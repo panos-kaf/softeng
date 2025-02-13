@@ -16,16 +16,25 @@ npm i &  # Run npm install in the background for the back-end
 cd ../front-end
 npm i &  # Run npm install in the background for the front-end
 
+cd ../cli-client
+npm i &
+
 # Wait for both npm installs to complete
 wait
 
 # Start back-end
 cd ../back-end
-npm run start &  # Run back-end in the background
+npm run start &
+BACKEND_PID=$!
 
 # Start front-end
 cd ../front-end
-npm run dev &  # Run front-end in the background
+npm run dev &
+FRONTEND_PID=$!
+
+# Set up a trap to catch SIGINT (Ctrl+C) and kill the background processes
+trap 'kill $BACKEND_PID $FRONTEND_PID' SIGINT
 
 # Wait for both processes to finish
-wait~
+wait $BACKEND_PID
+wait $FRONTEND_PID
